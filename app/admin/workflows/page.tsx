@@ -91,6 +91,27 @@ export default function WorkflowsPage() {
     }
   };
 
+  // 切换启用状态
+  const handleToggleEnabled = async (workflow: Workflow) => {
+    try {
+      const response = await fetch("/api/admin/workflows", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: workflow.id,
+          action: "toggleEnabled",
+          enabled: workflow.enabled === false ? true : false
+        }),
+      });
+
+      if (response.ok) {
+        await loadWorkflows();
+      }
+    } catch (error) {
+      console.error("Failed to toggle enabled:", error);
+    }
+  };
+
   // 打开编辑表单
   const handleEdit = (workflow: Workflow) => {
     setEditingWorkflow(workflow);
@@ -105,15 +126,14 @@ export default function WorkflowsPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* 页面标题 */}
+      {/* 页面标题和操作 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-800">工作流管理</h1>
-          <p className="text-gray-500 mt-1">管理你的 Coze 工作流配置</p>
+          <p className="text-gray-500 text-sm">共 {workflows.length} 个工作流</p>
         </div>
         <button
           onClick={() => setShowForm(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 transition-all"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 transition-all"
         >
           <span className="text-lg">+</span>
           添加工作流
@@ -122,7 +142,7 @@ export default function WorkflowsPage() {
 
       {/* 加载状态 */}
       {isLoading ? (
-        <div className="glass rounded-2xl border border-white/30 p-8 text-center">
+        <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center shadow-sm">
           <div className="flex items-center justify-center gap-3">
             <LoadingIcon />
             <span className="text-gray-500">加载中...</span>
@@ -134,6 +154,7 @@ export default function WorkflowsPage() {
           onEdit={handleEdit}
           onDelete={setDeleteConfirm}
           onSetDefault={handleSetDefault}
+          onToggleEnabled={handleToggleEnabled}
         />
       )}
 
@@ -149,11 +170,11 @@ export default function WorkflowsPage() {
 
       {/* 删除确认弹窗 */}
       {deleteConfirm && (
-        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="glass rounded-2xl border border-white/30 shadow-2xl w-full max-w-md p-6">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
             <div className="text-center">
-              <div className="w-16 h-16 rounded-2xl bg-red-100 flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">⚠️</span>
+              <div className="w-14 h-14 rounded-xl bg-red-100 flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">⚠️</span>
               </div>
               <h3 className="text-lg font-semibold text-gray-800 mb-2">确认删除</h3>
               <p className="text-gray-500 mb-6">
@@ -162,13 +183,13 @@ export default function WorkflowsPage() {
               <div className="flex justify-center gap-3">
                 <button
                   onClick={() => setDeleteConfirm(null)}
-                  className="px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors"
+                  className="px-5 py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors font-medium"
                 >
                   取消
                 </button>
                 <button
                   onClick={() => handleDelete(deleteConfirm)}
-                  className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white font-medium transition-colors"
+                  className="px-5 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-medium transition-colors"
                 >
                   确认删除
                 </button>

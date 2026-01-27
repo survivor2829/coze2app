@@ -169,8 +169,8 @@ export default function WorkflowForm({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="glass rounded-2xl border border-white/30 shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         {/* 标题 */}
         <div className="px-6 py-4 border-b border-gray-100">
           <h2 className="text-lg font-semibold text-gray-800">
@@ -197,7 +197,7 @@ export default function WorkflowForm({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例如：文章生成器"
-              className="w-full px-4 py-2.5 rounded-xl bg-white/80 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-purple-300 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-300 focus:bg-white transition-all"
               required
               disabled={isLoading}
             />
@@ -220,7 +220,7 @@ export default function WorkflowForm({
               onChange={(e) => setCurlCommand(e.target.value)}
               placeholder="从 Coze 复制完整的 curl 命令粘贴到这里..."
               rows={4}
-              className="w-full px-4 py-2.5 rounded-xl bg-white/80 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-purple-300 transition-all resize-none font-mono text-xs"
+              className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-300 focus:bg-white transition-all resize-none font-mono text-xs"
               disabled={isLoading}
             />
             <div className="flex items-center gap-2 mt-2">
@@ -276,7 +276,7 @@ export default function WorkflowForm({
               value={endpoint}
               onChange={(e) => setEndpoint(e.target.value)}
               placeholder="https://xxx.coze.site/run"
-              className="w-full px-4 py-2.5 rounded-xl bg-white/80 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-purple-300 transition-all font-mono text-sm"
+              className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-300 focus:bg-white transition-all font-mono text-sm"
               required
               disabled={isLoading}
             />
@@ -300,7 +300,7 @@ export default function WorkflowForm({
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
                 placeholder="eyJ..."
-                className="w-full px-4 py-2.5 pr-20 rounded-xl bg-white/80 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-purple-300 transition-all font-mono text-sm"
+                className="w-full px-4 py-2.5 pr-20 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-300 focus:bg-white transition-all font-mono text-sm"
                 required
                 disabled={isLoading}
               />
@@ -331,7 +331,7 @@ export default function WorkflowForm({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="简单描述这个工作流的用途..."
-              className="w-full px-4 py-2.5 rounded-xl bg-white/80 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-purple-300 transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-300 focus:bg-white transition-all"
               disabled={isLoading}
             />
           </div>

@@ -7,6 +7,7 @@ interface WorkflowListProps {
   onEdit: (workflow: Workflow) => void;
   onDelete: (workflow: Workflow) => void;
   onSetDefault: (workflow: Workflow) => void;
+  onToggleEnabled?: (workflow: Workflow) => void;
 }
 
 export default function WorkflowList({
@@ -14,10 +15,11 @@ export default function WorkflowList({
   onEdit,
   onDelete,
   onSetDefault,
+  onToggleEnabled,
 }: WorkflowListProps) {
   if (workflows.length === 0) {
     return (
-      <div className="glass rounded-2xl border border-white/30 p-8 text-center">
+      <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center shadow-sm">
         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center mx-auto mb-4">
           <span className="text-3xl">📭</span>
         </div>
@@ -28,26 +30,40 @@ export default function WorkflowList({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       {workflows.map((workflow) => (
         <div
           key={workflow.id}
-          className="glass rounded-2xl border border-white/30 p-5 hover:shadow-lg transition-shadow"
+          className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md hover:border-gray-200 transition-all"
         >
           <div className="flex items-start justify-between gap-4">
             {/* 左侧信息 */}
             <div className="flex items-start gap-4 flex-1 min-w-0">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center flex-shrink-0">
+              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center flex-shrink-0">
                 <span className="text-xl">⚡</span>
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <h3 className="font-semibold text-gray-800">{workflow.name}</h3>
                   {workflow.isDefault && (
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-600 text-xs font-medium">
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-medium">
                       默认
                     </span>
                   )}
+                  {/* 状态开关 */}
+                  <button
+                    onClick={() => onToggleEnabled?.(workflow)}
+                    className={`ml-auto relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                      workflow.enabled !== false ? 'bg-emerald-500' : 'bg-gray-300'
+                    }`}
+                    title={workflow.enabled !== false ? '已启用' : '已禁用'}
+                  >
+                    <span
+                      className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                        workflow.enabled !== false ? 'translate-x-4' : 'translate-x-0'
+                      }`}
+                    />
+                  </button>
                 </div>
                 <p className="text-sm text-gray-500 mb-2 line-clamp-2">
                   {workflow.description || "暂无描述"}
@@ -57,13 +73,18 @@ export default function WorkflowList({
                 </p>
               </div>
             </div>
+          </div>
 
-            {/* 右侧操作 */}
-            <div className="flex items-center gap-2 flex-shrink-0">
+          {/* 底部操作和时间 */}
+          <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+            <div className="text-xs text-gray-400">
+              更新于 {formatDate(workflow.updatedAt)}
+            </div>
+            <div className="flex items-center gap-1">
               {!workflow.isDefault && (
                 <button
                   onClick={() => onSetDefault(workflow)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
                   title="设为默认"
                 >
                   设为默认
@@ -71,25 +92,19 @@ export default function WorkflowList({
               )}
               <button
                 onClick={() => onEdit(workflow)}
-                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                className="p-2 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
                 title="编辑"
               >
                 <EditIcon />
               </button>
               <button
                 onClick={() => onDelete(workflow)}
-                className="p-2 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                className="p-2 rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors"
                 title="删除"
               >
                 <DeleteIcon />
               </button>
             </div>
-          </div>
-
-          {/* 时间信息 */}
-          <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-4 text-xs text-gray-400">
-            <span>创建于 {formatDate(workflow.createdAt)}</span>
-            <span>更新于 {formatDate(workflow.updatedAt)}</span>
           </div>
         </div>
       ))}

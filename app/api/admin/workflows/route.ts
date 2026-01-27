@@ -139,6 +139,18 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
+    if (action === "toggleEnabled") {
+      const { enabled } = body;
+      const workflow = await updateWorkflow(id, { enabled });
+      if (!workflow) {
+        return NextResponse.json(
+          { error: "Workflow not found" },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json({ success: true, workflow });
+    }
+
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });
   } catch (error) {
     console.error("Failed to perform action:", error);

@@ -9,6 +9,8 @@ export interface Workflow {
   workflowId: string; // Coze 工作流 ID（已废弃，保留兼容）
   description: string;
   isDefault: boolean;
+  enabled?: boolean; // 是否启用，默认为 true
+  callCount?: number; // 调用次数
   // 新增：参数模板和输入字段
   paramTemplate?: string; // JSON 格式的参数模板，从 curl 解析得到
   inputField?: string; // 用户输入对应的字段名，如 article_topic, topic, input 等

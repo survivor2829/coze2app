@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getWorkflow, getDefaultWorkflow, Workflow } from "@/lib/workflows";
+import { logApiCall } from "@/lib/api-logger";
 
 // 构建请求参数
 function buildPayload(workflow: Workflow, userInput: string): Record<string, unknown> {
@@ -71,6 +72,7 @@ export async function POST(request: NextRequest) {
 
     // 构建工作流参数
     const payload = buildPayload(workflow, message);
+    const startTime = Date.now();
 
     // 调用 Coze 专属工作流端点
     const response = await fetch(workflow.endpoint, {
@@ -82,9 +84,12 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify(payload),
     });
 
+    const duration = Date.now() - startTime;
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Coze API Error:", errorText);
+      logApiCall('coze', 'workflow-generate', false, `Coze API error: ${response.status}`, duration);
       return NextResponse.json(
         { error: `Coze API error: ${response.status}` },
         { status: response.status }
@@ -92,6 +97,7 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json();
+    logApiCall('coze', 'workflow-generate', true, undefined, duration);
 
     // 格式化返回数据 - 兼容不同工作流的响应格式
     // 工作流1（公众号）: title, formatted_article, images, image_positions
@@ -123,6 +129,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("API Error:", error);
+    logApiCall('coze', 'workflow-generate', false, error instanceof Error ? error.message : 'Unknown error');
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
