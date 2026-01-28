@@ -2,6 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 简约配色方案 - CSS变量 */
+:root {
+  /* 背景色 */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F7F7F8;
+  --bg-tertiary: #FAFAFA;
+
+  /* 文字色 */
+  --text-primary: #1A1A1A;
+  --text-secondary: #666666;
+  --text-tertiary: #999999;
+
+  /* 主题色 */
+  --accent-primary: #6B5CE7;
+  --accent-hover: #5A4BD6;
+  --accent-light: #F0EEFF;
+
+  /* 边框色 */
+  --border-default: #E5E5E5;
+  --border-hover: #D0D0D0;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -12,8 +38,17 @@ html {
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3 {
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 /* 自定义滚动条 */
@@ -34,17 +69,9 @@ body {
   background: rgba(0, 0, 0, 0.25);
 }
 
-/* 动画背景 */
+/* 简约背景 - 替换原来的渐变动画背景 */
 .bg-animate {
-  background: linear-gradient(-45deg, #f8fafc, #e0e7ff, #fce7f3, #ecfeff);
-  background-size: 400% 400%;
-  animation: gradient 15s ease infinite;
-}
-
-@keyframes gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  background-color: var(--bg-secondary);
 }
 
 /* 打字机光标 */
@@ -74,24 +101,73 @@ body {
   color: #1f2937;
 }
 
-/* 毛玻璃效果 */
+/* 简约头部 - 替换毛玻璃效果 */
 .glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background-color: var(--bg-primary);
+  border-bottom: 1px solid var(--border-default);
 }
 
 /* 输入框聚焦效果 */
 .input-glow:focus {
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(107, 92, 231, 0.1);
 }
 
-/* 图片悬浮效果 */
+/* 图片悬浮效果 - 更轻量 */
 .image-hover {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .image-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* 简约卡片样式 */
+.card-minimal {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.card-minimal:hover {
+  background-color: #F9F9F9;
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.card-minimal.selected {
+  border-color: var(--accent-primary);
+  background-color: var(--accent-light);
+}
+
+/* 简约按钮样式 */
+.btn-primary-minimal {
+  background-color: var(--accent-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary-minimal:hover {
+  background-color: var(--accent-hover);
+}
+
+.btn-primary-minimal:disabled {
+  opacity: 0.5;
+}
+
+.btn-secondary-minimal {
+  background-color: transparent;
+  color: var(--accent-primary);
+  border: none;
+}
+
+.btn-secondary-minimal:hover {
+  background-color: var(--accent-light);
 }

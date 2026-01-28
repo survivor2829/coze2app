@@ -226,17 +226,17 @@ export default function Chat() {
   return (
     <div className="min-h-screen bg-animate flex flex-col">
       {/* 头部 */}
-      <header className="glass border-b border-white/20 sticky top-0 z-50">
+      <header className="glass sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/25">
-              <span className="text-white text-lg">✨</span>
+            <div className="w-10 h-10 rounded-xl bg-[#6B5CE7] flex items-center justify-center">
+              <span className="text-white text-lg">AI</span>
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-gray-800">
+              <h1 className="text-lg font-semibold text-[#1A1A1A]">
                 {selectedWorkflow?.name || "AI 创作助手"}
               </h1>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-[#666666]">
                 {selectedWorkflow?.description || "输入主题，智能创作"}
               </p>
             </div>
@@ -247,18 +247,18 @@ export default function Chat() {
               <div className="relative">
                 <button
                   onClick={() => setShowWorkflowSelector(!showWorkflowSelector)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/50 border border-white/30 hover:bg-white/70 transition-colors text-sm"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-[#E5E5E5] hover:bg-[#F9F9F9] hover:border-[#D0D0D0] transition-colors text-sm"
                 >
-                  <span className="text-purple-500">⚡</span>
-                  <span className="text-gray-700 max-w-[100px] truncate">
+                  <span className="text-[#6B5CE7]">⚡</span>
+                  <span className="text-[#1A1A1A] max-w-[100px] truncate">
                     {selectedWorkflow?.name || "选择工作流"}
                   </span>
                   <ChevronIcon />
                 </button>
                 {showWorkflowSelector && (
-                  <div className="absolute right-0 top-full mt-2 w-72 glass rounded-xl border border-white/30 shadow-xl overflow-hidden z-50">
-                    <div className="p-2 border-b border-gray-100">
-                      <p className="text-xs text-gray-500 px-2">选择工作流</p>
+                  <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl border border-[#E5E5E5] shadow-lg overflow-hidden z-50">
+                    <div className="p-2 border-b border-[#E5E5E5]">
+                      <p className="text-xs text-[#999999] px-2">选择工作流</p>
                     </div>
                     <div className="p-2 max-h-64 overflow-y-auto">
                       {workflows.map((workflow) => (
@@ -267,20 +267,20 @@ export default function Chat() {
                           onClick={() => handleSelectWorkflow(workflow.id)}
                           className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
                             workflow.id === selectedWorkflowId
-                              ? "bg-purple-100 text-purple-700"
-                              : "hover:bg-white/50 text-gray-700"
+                              ? "bg-[#F0EEFF] text-[#6B5CE7]"
+                              : "hover:bg-[#F9F9F9] text-[#1A1A1A]"
                           }`}
                         >
                           <div className="flex items-center justify-between">
                             <span className="font-medium">{workflow.name}</span>
                             {workflow.isDefault && (
-                              <span className="text-xs text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded">
+                              <span className="text-xs text-[#666666] bg-[#F0F0F0] px-1.5 py-0.5 rounded">
                                 默认
                               </span>
                             )}
                           </div>
                           {workflow.description && (
-                            <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">
+                            <p className="text-xs text-[#666666] mt-0.5 line-clamp-2">
                               {workflow.description}
                             </p>
                           )}
@@ -292,9 +292,9 @@ export default function Chat() {
               </div>
             )}
             {/* 状态指示器 */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/50 border border-white/30">
-              <span className={`w-2 h-2 rounded-full ${isLoading ? "bg-amber-400 animate-pulse" : workflows.length === 0 && isWorkflowsLoaded ? "bg-gray-400" : "bg-emerald-400"}`} />
-              <span className="text-xs text-gray-600">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-[#E5E5E5]">
+              <span className={`w-2 h-2 rounded-full ${isLoading ? "bg-amber-400 animate-pulse" : workflows.length === 0 && isWorkflowsLoaded ? "bg-gray-400" : "bg-[#6B5CE7]"}`} />
+              <span className="text-xs text-[#666666]">
                 {isLoading ? "创作中" : workflows.length === 0 && isWorkflowsLoaded ? "未配置" : "在线"}
               </span>
             </div>
@@ -310,34 +310,34 @@ export default function Chat() {
             <div className="flex flex-col items-center justify-center py-12 animate-fade-in">
               {workflows.length === 0 ? (
                 <>
-                  <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center shadow-2xl shadow-gray-500/30 mb-8">
-                    <span className="text-4xl">⚙️</span>
+                  <div className="w-16 h-16 rounded-2xl bg-[#F0F0F0] flex items-center justify-center mb-6">
+                    <span className="text-3xl">⚙️</span>
                   </div>
-                  <h2 className="text-2xl font-semibold text-gray-800 mb-3">暂未配置服务</h2>
-                  <p className="text-gray-500 mb-6">请联系管理员在后台添加工作流配置</p>
+                  <h2 className="text-xl font-semibold text-[#1A1A1A] mb-3">暂未配置服务</h2>
+                  <p className="text-[#666666] mb-6">请联系管理员在后台添加工作流配置</p>
                   <a
                     href="/admin"
-                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 transition-all"
+                    className="px-4 py-2 rounded-lg bg-[#6B5CE7] hover:bg-[#5A4BD6] text-white font-medium transition-colors"
                   >
                     前往后台配置
                   </a>
                 </>
               ) : (
                 <>
-                  <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-2xl shadow-purple-500/30 mb-6">
-                    <span className="text-4xl">✨</span>
+                  <div className="w-16 h-16 rounded-2xl bg-[#6B5CE7] flex items-center justify-center mb-6">
+                    <span className="text-3xl text-white">AI</span>
                   </div>
-                  <h2 className="text-2xl font-semibold text-gray-800 mb-2">你好，有什么可以帮你？</h2>
-                  <p className="text-gray-500 mb-8">选择一个话题开始，或者直接输入你的想法</p>
+                  <h2 className="text-xl font-semibold text-[#1A1A1A] mb-2">你好，有什么可以帮你？</h2>
+                  <p className="text-[#666666] mb-8">选择一个话题开始，或者直接输入你的想法</p>
 
                   {/* 智能引导问题 */}
                   <div className="w-full max-w-2xl">
                     <div className="flex items-center gap-2 mb-4">
-                      <span className="text-sm text-gray-500">智能推荐</span>
+                      <span className="text-sm text-[#999999]">智能推荐</span>
                       <button
                         onClick={generateSmartPrompts}
                         disabled={isLoadingPrompts}
-                        className="text-purple-500 hover:text-purple-600 text-sm"
+                        className="text-[#6B5CE7] hover:text-[#5A4BD6] text-sm transition-colors"
                       >
                         {isLoadingPrompts ? "生成中..." : "换一批"}
                       </button>
@@ -347,10 +347,10 @@ export default function Chat() {
                         <button
                           key={idx}
                           onClick={() => handleQuickPrompt(prompt)}
-                          className="p-4 text-left rounded-2xl bg-white/60 hover:bg-white/80 border border-white/40 hover:border-purple-200 text-gray-700 text-sm transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/10 group"
+                          className="p-4 text-left rounded-xl bg-white border border-[#E5E5E5] hover:border-[#D0D0D0] hover:bg-[#F9F9F9] text-[#1A1A1A] text-sm transition-all group"
                         >
-                          <span className="group-hover:text-purple-600 transition-colors line-clamp-2">{prompt}</span>
-                          <span className="float-right text-gray-300 group-hover:text-purple-400 transition-colors mt-1">→</span>
+                          <span className="group-hover:text-[#6B5CE7] transition-colors line-clamp-2">{prompt}</span>
+                          <span className="float-right text-[#D0D0D0] group-hover:text-[#6B5CE7] transition-colors mt-1">→</span>
                         </button>
                       ))}
                     </div>
@@ -363,10 +363,10 @@ export default function Chat() {
           {/* 加载中 */}
           {messages.length === 0 && !isWorkflowsLoaded && (
             <div className="flex flex-col items-center justify-center py-20 animate-fade-in">
-              <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-2xl shadow-purple-500/30 mb-8 animate-pulse">
-                <span className="text-4xl">✨</span>
+              <div className="w-16 h-16 rounded-2xl bg-[#6B5CE7] flex items-center justify-center mb-6 animate-pulse">
+                <span className="text-3xl text-white">AI</span>
               </div>
-              <p className="text-gray-500">加载中...</p>
+              <p className="text-[#666666]">加载中...</p>
             </div>
           )}
 
@@ -378,20 +378,20 @@ export default function Chat() {
                 className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} animate-slide-up`}
               >
                 {message.role === "user" ? (
-                  <div className="max-w-[85%] bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-2xl rounded-tr-md px-5 py-3 shadow-lg shadow-purple-500/20">
+                  <div className="max-w-[85%] bg-[#6B5CE7] text-white rounded-2xl rounded-tr-md px-5 py-3">
                     <p className="whitespace-pre-wrap">{message.content}</p>
                   </div>
                 ) : (
                   <div className="max-w-[90%] space-y-4">
-                    <div className="glass rounded-2xl rounded-tl-md border border-white/30 shadow-xl overflow-hidden">
+                    <div className="bg-white rounded-2xl rounded-tl-md border border-[#E5E5E5] overflow-hidden">
                       {/* 标题 */}
                       {message.title && (
-                        <div className="px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+                        <div className="px-5 py-4 border-b border-[#E5E5E5] bg-[#FAFAFA]">
                           <div className="flex items-start justify-between gap-3">
-                            <h3 className="text-lg font-semibold text-gray-800">{message.title}</h3>
+                            <h3 className="text-lg font-semibold text-[#1A1A1A]">{message.title}</h3>
                             <button
                               onClick={() => copyContent(message.title || "")}
-                              className="flex-shrink-0 p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                              className="flex-shrink-0 p-1.5 rounded-lg hover:bg-[#F0F0F0] text-[#999999] hover:text-[#666666] transition-colors"
                               title="复制标题"
                             >
                               <CopyIcon />
@@ -400,27 +400,27 @@ export default function Chat() {
                         </div>
                       )}
 
-                      {/* 图片展示 - 使用 object-contain 保持完整比例 */}
+                      {/* 图片展示 */}
                       {message.images && message.images.length > 0 && (
-                        <div className="p-4 bg-gray-50/50">
+                        <div className="p-4 bg-[#FAFAFA]">
                           {/* 多张图片时显示下载全部按钮 */}
                           {message.images.length > 1 && (
                             <div className="flex justify-end mb-3">
                               <button
                                 onClick={() => message.images?.forEach((img, i) => downloadImage(img, `image-${i + 1}.jpg`))}
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium transition-colors"
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#6B5CE7] hover:bg-[#5A4BD6] text-white text-xs font-medium transition-colors"
                               >
                                 <DownloadIcon />
-                                📦 下载全部 ({message.images.length})
+                                下载全部 ({message.images.length})
                               </button>
                             </div>
                           )}
                           <div className={`grid gap-4 ${message.images.length === 1 ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"}`}>
                             {message.images.map((img, idx) => (
-                              <div key={idx} className="rounded-xl overflow-hidden bg-white border border-gray-200 shadow-sm">
-                                {/* 图片区域 - 使用 object-contain 保持完整比例 */}
+                              <div key={idx} className="rounded-xl overflow-hidden bg-white border border-[#E5E5E5]">
+                                {/* 图片区域 */}
                                 <div
-                                  className="cursor-pointer bg-gray-50"
+                                  className="cursor-pointer bg-[#FAFAFA]"
                                   onClick={() => setLightboxImage(img)}
                                 >
                                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -432,13 +432,13 @@ export default function Chat() {
                                   />
                                 </div>
                                 {/* 每张图片下方的下载按钮 */}
-                                <div className="px-3 py-2 bg-gray-50 border-t border-gray-100">
+                                <div className="px-3 py-2 bg-[#FAFAFA] border-t border-[#E5E5E5]">
                                   <button
                                     onClick={() => downloadImage(img, `image-${idx + 1}.jpg`)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium transition-colors w-full justify-center"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#6B5CE7] hover:bg-[#5A4BD6] text-white text-xs font-medium transition-colors w-full justify-center"
                                   >
                                     <DownloadIcon />
-                                    ⬇️ 下载
+                                    下载
                                   </button>
                                 </div>
                               </div>
@@ -449,7 +449,7 @@ export default function Chat() {
 
                       {/* 正文内容 - 支持 Markdown 渲染 */}
                       <div className="px-5 py-4">
-                        <div className="article-content text-gray-700 prose prose-sm max-w-none">
+                        <div className="article-content text-[#1A1A1A] prose prose-sm max-w-none">
                           <ReactMarkdown remarkPlugins={[remarkGfm]}>
                             {message.content}
                           </ReactMarkdown>
@@ -457,15 +457,15 @@ export default function Chat() {
                       </div>
 
                       {/* 操作栏 */}
-                      <div className="px-5 py-3 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between">
-                        <span className="text-xs text-gray-400">
+                      <div className="px-5 py-3 border-t border-[#E5E5E5] bg-[#FAFAFA] flex items-center justify-between">
+                        <span className="text-xs text-[#999999]">
                           {message.timestamp.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })}
                         </span>
                         <div className="flex items-center gap-2">
                           {message.images && message.images.length > 0 && (
                             <button
                               onClick={() => message.images?.forEach((img, i) => downloadImage(img, `image-${i + 1}.jpg`))}
-                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-gray-100 text-gray-600 text-xs font-medium transition-colors border border-gray-200"
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#F9F9F9] text-[#666666] text-xs font-medium transition-colors border border-[#E5E5E5]"
                             >
                               <DownloadIcon />
                               下载全部图片
@@ -473,7 +473,7 @@ export default function Chat() {
                           )}
                           <button
                             onClick={() => copyContent(message.content)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-gray-100 text-gray-600 text-xs font-medium transition-colors border border-gray-200"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#F9F9F9] text-[#666666] text-xs font-medium transition-colors border border-[#E5E5E5]"
                           >
                             <CopyIcon />
                             复制全文
@@ -489,14 +489,14 @@ export default function Chat() {
             {/* 加载状态 */}
             {isLoading && (
               <div className="flex justify-start animate-slide-up">
-                <div className="glass rounded-2xl rounded-tl-md border border-white/30 px-5 py-4 shadow-lg">
+                <div className="bg-white rounded-2xl rounded-tl-md border border-[#E5E5E5] px-5 py-4">
                   <div className="flex items-center gap-3">
                     <div className="flex gap-1">
-                      <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce-subtle" style={{ animationDelay: "0ms" }} />
-                      <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce-subtle" style={{ animationDelay: "150ms" }} />
-                      <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce-subtle" style={{ animationDelay: "300ms" }} />
+                      <span className="w-2 h-2 bg-[#6B5CE7] rounded-full animate-bounce-subtle" style={{ animationDelay: "0ms" }} />
+                      <span className="w-2 h-2 bg-[#6B5CE7] rounded-full animate-bounce-subtle" style={{ animationDelay: "150ms" }} />
+                      <span className="w-2 h-2 bg-[#6B5CE7] rounded-full animate-bounce-subtle" style={{ animationDelay: "300ms" }} />
                     </div>
-                    <span className="text-sm text-gray-500">AI 正在创作中...</span>
+                    <span className="text-sm text-[#666666]">AI 正在创作中...</span>
                   </div>
                 </div>
               </div>
@@ -509,13 +509,13 @@ export default function Chat() {
 
       {/* Prompt 编辑器 */}
       {showPromptEditor && (
-        <div className="glass border-t border-white/20 px-4 py-3">
+        <div className="bg-white border-t border-[#E5E5E5] px-4 py-3">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-gray-600">编辑 Prompt</span>
+              <span className="text-sm text-[#666666]">编辑 Prompt</span>
               <button
                 onClick={() => setShowPromptEditor(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-[#999999] hover:text-[#666666] transition-colors"
               >
                 <CloseIcon />
               </button>
@@ -523,7 +523,7 @@ export default function Chat() {
             <textarea
               value={editablePrompt}
               onChange={(e) => setEditablePrompt(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-white/80 border border-purple-200 text-gray-800 focus:outline-none focus:border-purple-400 resize-none"
+              className="w-full px-4 py-3 rounded-lg bg-[#FAFAFA] border border-[#E5E5E5] text-[#1A1A1A] focus:outline-none focus:border-[#6B5CE7] focus:ring-2 focus:ring-[#6B5CE7]/10 resize-none"
               rows={3}
               autoFocus
             />
@@ -532,17 +532,17 @@ export default function Chat() {
               const recommended = getRecommendedWorkflow(editablePrompt);
               if (recommended && recommended.id !== selectedWorkflowId) {
                 return (
-                  <div className="mt-2 p-3 rounded-lg bg-purple-50 border border-purple-200">
+                  <div className="mt-2 p-3 rounded-lg bg-[#F0EEFF] border border-[#6B5CE7]/30">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-purple-700">
+                        <p className="text-sm text-[#6B5CE7]">
                           <span className="font-medium">推荐工作流：</span>{recommended.name}
                         </p>
-                        <p className="text-xs text-purple-500">{recommended.description}</p>
+                        <p className="text-xs text-[#666666]">{recommended.description}</p>
                       </div>
                       <button
                         onClick={() => sendMessage(editablePrompt, recommended.id)}
-                        className="px-3 py-1.5 rounded-lg bg-purple-500 text-white text-sm hover:bg-purple-600 transition-colors"
+                        className="px-3 py-1.5 rounded-lg bg-[#6B5CE7] hover:bg-[#5A4BD6] text-white text-sm transition-colors"
                       >
                         使用此工作流
                       </button>
@@ -556,7 +556,7 @@ export default function Chat() {
               <button
                 onClick={() => sendMessage(editablePrompt)}
                 disabled={!editablePrompt.trim() || isLoading}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow-lg shadow-purple-500/30 hover:shadow-xl disabled:opacity-50 transition-all"
+                className="px-4 py-2 rounded-lg bg-[#6B5CE7] hover:bg-[#5A4BD6] text-white font-medium disabled:opacity-50 transition-colors"
               >
                 发送
               </button>
@@ -567,7 +567,7 @@ export default function Chat() {
 
       {/* 输入区域 */}
       {!showPromptEditor && (
-        <footer className="glass border-t border-white/20 sticky bottom-0">
+        <footer className="bg-white border-t border-[#E5E5E5] sticky bottom-0">
           <div className="max-w-4xl mx-auto px-4 py-4">
             <div className="flex items-end gap-3">
               <div className="flex-1 relative">
@@ -579,19 +579,19 @@ export default function Chat() {
                   placeholder={workflows.length === 0 && isWorkflowsLoaded ? "暂未配置服务..." : "输入你想创作的主题..."}
                   rows={1}
                   disabled={isLoading || (workflows.length === 0 && isWorkflowsLoaded)}
-                  className="w-full px-5 py-3.5 rounded-2xl bg-white/80 border border-white/50 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-purple-300 input-glow resize-none disabled:opacity-50 transition-all"
+                  className="w-full px-5 py-3.5 rounded-xl bg-[#FAFAFA] border border-[#E5E5E5] text-[#1A1A1A] placeholder-[#999999] focus:outline-none focus:border-[#6B5CE7] focus:ring-2 focus:ring-[#6B5CE7]/10 resize-none disabled:opacity-50 transition-all"
                   style={{ minHeight: "52px", maxHeight: "150px" }}
                 />
               </div>
               <button
                 onClick={() => sendMessage(input)}
                 disabled={!input.trim() || isLoading || (workflows.length === 0 && isWorkflowsLoaded)}
-                className="flex-shrink-0 w-[52px] h-[52px] rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white flex items-center justify-center shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105 active:scale-95"
+                className="flex-shrink-0 w-[52px] h-[52px] rounded-xl bg-[#6B5CE7] hover:bg-[#5A4BD6] text-white flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isLoading ? <LoadingIcon /> : <SendIcon />}
               </button>
             </div>
-            <p className="text-center text-xs text-gray-400 mt-3">
+            <p className="text-center text-xs text-[#999999] mt-3">
               按 Enter 发送 · Shift + Enter 换行
             </p>
           </div>
@@ -599,10 +599,10 @@ export default function Chat() {
       )}
 
       {/* 底部管理后台链接 */}
-      <div className="py-3 text-center">
+      <div className="py-3 text-center border-t border-[#E5E5E5]">
         <a
           href="/admin"
-          className="text-[11px] text-gray-300 hover:text-gray-400 transition-colors"
+          className="text-[11px] text-[#999999] hover:text-[#666666] transition-colors"
         >
           管理后台
         </a>
@@ -627,14 +627,14 @@ export default function Chat() {
                   e.stopPropagation();
                   downloadImage(lightboxImage, "image.jpg");
                 }}
-                className="px-4 py-2 rounded-lg bg-white/90 text-gray-800 font-medium hover:bg-white transition-colors flex items-center gap-2"
+                className="px-4 py-2 rounded-lg bg-white text-[#1A1A1A] font-medium hover:bg-[#F9F9F9] transition-colors flex items-center gap-2"
               >
                 <DownloadIcon />
                 下载图片
               </button>
               <button
                 onClick={() => setLightboxImage(null)}
-                className="px-4 py-2 rounded-lg bg-gray-800/90 text-white font-medium hover:bg-gray-800 transition-colors"
+                className="px-4 py-2 rounded-lg bg-[#1A1A1A] text-white font-medium hover:bg-black transition-colors"
               >
                 关闭
               </button>

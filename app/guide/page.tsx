@@ -372,10 +372,10 @@ export default function GuidePage() {
   return (
     <div className="min-h-screen bg-animate">
       {/* Header */}
-      <header className="glass border-b border-white/20 sticky top-0 z-50">
+      <header className="glass sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/25">
+            <div className="w-10 h-10 rounded-xl bg-[#6B5CE7] flex items-center justify-center">
               <span className="text-white text-lg">✨</span>
             </div>
             <div>
@@ -385,40 +385,40 @@ export default function GuidePage() {
           </Link>
           <Link
             href="/"
-            className="px-4 py-2 rounded-xl bg-white/50 border border-white/30 text-gray-600 text-sm hover:bg-white/70 transition-colors"
+            className="px-4 py-2 rounded-lg bg-white border border-[#E5E5E5] text-gray-600 text-sm hover:bg-gray-50 hover:border-[#D0D0D0] transition-colors"
           >
             返回首页
           </Link>
         </div>
       </header>
 
-      {/* Progress Bar */}
+      {/* Progress Bar - 简约风格 */}
       <div className="max-w-4xl mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-2">
           {[1, 2, 3, 4, 5].map((step) => (
             <div key={step} className="flex items-center">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-medium transition-all ${
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
                   step < currentStep
-                    ? "bg-emerald-500 text-white"
+                    ? "bg-[#6B5CE7] text-white"
                     : step === currentStep
-                    ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/30"
-                    : "bg-gray-200 text-gray-400"
+                    ? "bg-[#6B5CE7] text-white"
+                    : "bg-[#F0F0F0] text-[#999999] border border-[#E5E5E5]"
                 }`}
               >
                 {step < currentStep ? "✓" : step}
               </div>
               {step < 5 && (
                 <div
-                  className={`w-12 sm:w-20 h-1 mx-2 rounded ${
-                    step < currentStep ? "bg-emerald-500" : "bg-gray-200"
+                  className={`w-12 sm:w-20 h-[1px] mx-2 ${
+                    step < currentStep ? "bg-[#6B5CE7]" : "bg-[#E5E5E5]"
                   }`}
                 />
               )}
             </div>
           ))}
         </div>
-        <div className="flex justify-between text-xs text-gray-500">
+        <div className="flex justify-between text-xs text-[#999999]">
           <span>选类型</span>
           <span>回答问题</span>
           <span>确认Prompt</span>
@@ -447,22 +447,22 @@ export default function GuidePage() {
                 <button
                   key={type.id}
                   onClick={() => handleSelectType(type.id)}
-                  className={`p-4 rounded-2xl border-2 transition-all text-left ${
+                  className={`p-4 rounded-xl border transition-all text-left ${
                     selectedType === type.id
-                      ? "border-indigo-500 bg-indigo-50"
-                      : "border-gray-200 bg-white hover:border-gray-300"
+                      ? "border-[#6B5CE7] bg-[#F8F7FF]"
+                      : "border-[#E5E5E5] bg-white hover:border-[#D0D0D0] hover:bg-[#F9F9F9]"
                   }`}
                 >
                   <span className="text-3xl mb-2 block">{type.icon}</span>
-                  <h3 className="font-medium text-gray-800">{type.name}</h3>
-                  <p className="text-xs text-gray-500 mt-1">{type.description}</p>
+                  <h3 className="font-medium text-[#1A1A1A]">{type.name}</h3>
+                  <p className="text-xs text-[#666666] mt-1">{type.description}</p>
                 </button>
               ))}
             </div>
 
             {selectedType === "other" && (
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-[#1A1A1A] mb-2">
                   请输入自定义内容类型
                 </label>
                 <input
@@ -470,7 +470,7 @@ export default function GuidePage() {
                   value={customType}
                   onChange={(e) => setCustomType(e.target.value)}
                   placeholder="例如：产品介绍、活动策划..."
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:outline-none"
+                  className="w-full px-4 py-3 rounded-lg border border-[#E5E5E5] bg-[#FAFAFA] focus:border-[#6B5CE7] focus:outline-none focus:ring-2 focus:ring-[#6B5CE7]/10 text-[#1A1A1A] placeholder:text-[#999999]"
                 />
               </div>
             )}
@@ -478,7 +478,7 @@ export default function GuidePage() {
             <button
               onClick={handleStep1Next}
               disabled={isLoading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow-lg shadow-purple-500/30 hover:shadow-xl disabled:opacity-50 transition-all"
+              className="w-full py-3 rounded-lg bg-[#6B5CE7] hover:bg-[#5A4BD6] text-white font-medium disabled:opacity-50 transition-colors"
             >
               {isLoading ? "生成问题中..." : "下一步"}
             </button>
@@ -492,8 +492,8 @@ export default function GuidePage() {
             <p className="text-gray-500 mb-6">帮助我们更好地理解你的需求</p>
 
             {/* Word Count Selector */}
-            <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
-              <label className="block text-sm font-medium text-gray-800 mb-3">
+            <div className="bg-white rounded-xl border border-[#E5E5E5] p-5 mb-6">
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-3">
                 期望字数 <span className="text-red-500">*</span>
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -502,14 +502,14 @@ export default function GuidePage() {
                     key={option.value}
                     type="button"
                     onClick={() => setWordCount(option.value)}
-                    className={`p-3 rounded-lg border-2 text-left transition-all ${
+                    className={`p-3 rounded-lg border text-left transition-all ${
                       wordCount === option.value
-                        ? "border-indigo-500 bg-indigo-50"
-                        : "border-gray-200 hover:border-gray-300"
+                        ? "border-[#6B5CE7] bg-[#F8F7FF]"
+                        : "border-[#E5E5E5] hover:border-[#D0D0D0] hover:bg-[#F9F9F9]"
                     }`}
                   >
-                    <span className="font-medium text-gray-800 block">{option.label}</span>
-                    <span className="text-xs text-gray-500">{option.description}</span>
+                    <span className="font-medium text-[#1A1A1A] block">{option.label}</span>
+                    <span className="text-xs text-[#666666]">{option.description}</span>
                   </button>
                 ))}
               </div>
@@ -522,15 +522,15 @@ export default function GuidePage() {
                     onChange={(e) => setCustomWordCount(e.target.value)}
                     min="100"
                     max="10000"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-indigo-500 focus:outline-none"
+                    className="w-full px-4 py-3 rounded-lg border border-[#E5E5E5] bg-[#FAFAFA] focus:border-[#6B5CE7] focus:outline-none focus:ring-2 focus:ring-[#6B5CE7]/10 text-[#1A1A1A] placeholder:text-[#999999]"
                   />
                 </div>
               )}
             </div>
 
             {/* Image Count Selector */}
-            <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
-              <label className="block text-sm font-medium text-gray-800 mb-3">
+            <div className="bg-white rounded-xl border border-[#E5E5E5] p-5 mb-6">
+              <label className="block text-sm font-medium text-[#1A1A1A] mb-3">
                 AI配图数量
               </label>
               <div className="grid grid-cols-3 gap-3">
@@ -539,15 +539,15 @@ export default function GuidePage() {
                     key={option.value}
                     type="button"
                     onClick={() => setImageCount(option.value)}
-                    className={`p-3 rounded-lg border-2 text-center transition-all ${
+                    className={`p-3 rounded-lg border text-center transition-all ${
                       imageCount === option.value
-                        ? "border-indigo-500 bg-indigo-50"
-                        : "border-gray-200 hover:border-gray-300"
+                        ? "border-[#6B5CE7] bg-[#F8F7FF]"
+                        : "border-[#E5E5E5] hover:border-[#D0D0D0] hover:bg-[#F9F9F9]"
                     }`}
                   >
                     <span className="text-2xl block mb-1">{option.icon}</span>
-                    <span className="font-medium text-gray-800 block text-sm">{option.label}</span>
-                    <span className="text-xs text-gray-500">{option.description}</span>
+                    <span className="font-medium text-[#1A1A1A] block text-sm">{option.label}</span>
+                    <span className="text-xs text-[#666666]">{option.description}</span>
                   </button>
                 ))}
               </div>
@@ -555,8 +555,8 @@ export default function GuidePage() {
 
             <div className="space-y-6 mb-6">
               {questions.map((question) => (
-                <div key={question.id} className="bg-white rounded-xl border border-gray-200 p-5">
-                  <label className="block text-sm font-medium text-gray-800 mb-3">
+                <div key={question.id} className="bg-white rounded-xl border border-[#E5E5E5] p-5">
+                  <label className="block text-sm font-medium text-[#1A1A1A] mb-3">
                     {question.label}
                     {question.required && <span className="text-red-500 ml-1">*</span>}
                   </label>
@@ -567,7 +567,7 @@ export default function GuidePage() {
                       placeholder={question.placeholder}
                       value={(answers[question.id] as string) || ""}
                       onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                      className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-indigo-500 focus:outline-none"
+                      className="w-full px-4 py-3 rounded-lg border border-[#E5E5E5] bg-[#FAFAFA] focus:border-[#6B5CE7] focus:outline-none focus:ring-2 focus:ring-[#6B5CE7]/10 text-[#1A1A1A] placeholder:text-[#999999]"
                     />
                   )}
 
@@ -577,7 +577,7 @@ export default function GuidePage() {
                       value={(answers[question.id] as string) || ""}
                       onChange={(e) => handleAnswerChange(question.id, e.target.value)}
                       rows={3}
-                      className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-indigo-500 focus:outline-none resize-none"
+                      className="w-full px-4 py-3 rounded-lg border border-[#E5E5E5] bg-[#FAFAFA] focus:border-[#6B5CE7] focus:outline-none focus:ring-2 focus:ring-[#6B5CE7]/10 resize-none text-[#1A1A1A] placeholder:text-[#999999]"
                     />
                   )}
 
@@ -588,8 +588,8 @@ export default function GuidePage() {
                           key={option}
                           className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors ${
                             answers[question.id] === option
-                              ? "border-indigo-500 bg-indigo-50"
-                              : "border-gray-200 hover:bg-gray-50"
+                              ? "border-[#6B5CE7] bg-[#F8F7FF]"
+                              : "border-[#E5E5E5] hover:bg-[#F9F9F9]"
                           }`}
                         >
                           <input
@@ -598,9 +598,9 @@ export default function GuidePage() {
                             value={option}
                             checked={answers[question.id] === option}
                             onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                            className="mr-3"
+                            className="mr-3 accent-[#6B5CE7]"
                           />
-                          <span className="text-gray-700">{option}</span>
+                          <span className="text-[#1A1A1A]">{option}</span>
                         </label>
                       ))}
                     </div>
@@ -616,8 +616,8 @@ export default function GuidePage() {
                             key={option}
                             className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors ${
                               isChecked
-                                ? "border-indigo-500 bg-indigo-50"
-                                : "border-gray-200 hover:bg-gray-50"
+                                ? "border-[#6B5CE7] bg-[#F8F7FF]"
+                                : "border-[#E5E5E5] hover:bg-[#F9F9F9]"
                             }`}
                           >
                             <input
@@ -630,9 +630,9 @@ export default function GuidePage() {
                                   : selectedOptions.filter((o) => o !== option);
                                 handleAnswerChange(question.id, newSelected);
                               }}
-                              className="mr-3"
+                              className="mr-3 accent-[#6B5CE7]"
                             />
-                            <span className="text-gray-700">{option}</span>
+                            <span className="text-[#1A1A1A]">{option}</span>
                           </label>
                         );
                       })}
@@ -645,14 +645,14 @@ export default function GuidePage() {
             <div className="flex gap-3">
               <button
                 onClick={goBack}
-                className="px-6 py-3 rounded-xl bg-gray-100 text-gray-600 font-medium hover:bg-gray-200 transition-colors"
+                className="px-6 py-3 rounded-lg bg-white border border-[#E5E5E5] text-[#666666] font-medium hover:bg-[#F9F9F9] hover:border-[#D0D0D0] transition-colors"
               >
                 上一步
               </button>
               <button
                 onClick={handleStep2Next}
                 disabled={isLoading}
-                className="flex-1 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow-lg shadow-purple-500/30 hover:shadow-xl disabled:opacity-50 transition-all"
+                className="flex-1 py-3 rounded-xl bg-[#6B5CE7] hover:bg-[#5A4BD6] text-white font-medium disabled:opacity-50 transition-colors"
               >
                 {isLoading ? "生成Prompt中..." : "下一步"}
               </button>
@@ -666,28 +666,28 @@ export default function GuidePage() {
             <h2 className="text-xl font-semibold text-gray-800 mb-2">确认 Prompt</h2>
             <p className="text-gray-500 mb-6">AI 根据你的回答生成了以下 Prompt，你可以编辑调整</p>
 
-            <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
+            <div className="bg-white rounded-xl border border-[#E5E5E5] p-5 mb-6">
               <textarea
                 value={editablePrompt}
                 onChange={(e) => setEditablePrompt(e.target.value)}
                 rows={10}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-indigo-500 focus:outline-none resize-none font-mono text-sm"
+                className="w-full px-4 py-3 rounded-lg border border-[#E5E5E5] bg-[#FAFAFA] focus:border-[#6B5CE7] focus:outline-none focus:ring-2 focus:ring-[#6B5CE7]/10 resize-none font-mono text-sm text-[#1A1A1A]"
               />
               <div className="flex justify-between items-center mt-3 text-sm">
-                <span className="text-gray-400">{editablePrompt.length} 字符</span>
+                <span className="text-[#999999]">{editablePrompt.length} 字符</span>
                 <div className="flex gap-3">
                   <button
                     onClick={() => setEditablePrompt(generatedPrompt)}
-                    className="text-gray-500 hover:text-gray-600"
+                    className="text-[#666666] hover:text-[#1A1A1A] transition-colors"
                   >
                     撤销编辑
                   </button>
                   <button
                     onClick={handleRegeneratePrompt}
                     disabled={isRegeneratingPrompt}
-                    className="text-indigo-500 hover:text-indigo-600 font-medium disabled:opacity-50"
+                    className="text-[#6B5CE7] hover:text-[#5A4BD6] font-medium disabled:opacity-50 transition-colors"
                   >
-                    {isRegeneratingPrompt ? "生成中..." : "🔄 换一批"}
+                    {isRegeneratingPrompt ? "生成中..." : "换一批"}
                   </button>
                 </div>
               </div>
@@ -696,14 +696,14 @@ export default function GuidePage() {
             <div className="flex gap-3">
               <button
                 onClick={goBack}
-                className="px-6 py-3 rounded-xl bg-gray-100 text-gray-600 font-medium hover:bg-gray-200 transition-colors"
+                className="px-6 py-3 rounded-lg bg-white border border-[#E5E5E5] text-[#666666] font-medium hover:bg-[#F9F9F9] hover:border-[#D0D0D0] transition-colors"
               >
                 上一步
               </button>
               <button
                 onClick={handleStep3Next}
                 disabled={isLoading}
-                className="flex-1 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow-lg shadow-purple-500/30 hover:shadow-xl disabled:opacity-50 transition-all"
+                className="flex-1 py-3 rounded-xl bg-[#6B5CE7] hover:bg-[#5A4BD6] text-white font-medium disabled:opacity-50 transition-colors"
               >
                 {isLoading ? "加载工作流..." : "下一步"}
               </button>
@@ -718,12 +718,12 @@ export default function GuidePage() {
             <p className="text-gray-500 mb-6">选择一个工作流来生成内容</p>
 
             {workflows.length === 0 ? (
-              <div className="bg-white rounded-xl border border-gray-200 p-8 text-center mb-6">
+              <div className="bg-white rounded-xl border border-[#E5E5E5] p-8 text-center mb-6">
                 <span className="text-4xl mb-4 block">📭</span>
-                <p className="text-gray-500">暂无可用工作流，请先在后台配置</p>
+                <p className="text-[#666666]">暂无可用工作流，请先在后台配置</p>
                 <Link
                   href="/admin/workflows"
-                  className="inline-block mt-4 px-4 py-2 rounded-lg bg-indigo-500 text-white text-sm"
+                  className="inline-block mt-4 px-4 py-2 rounded-lg bg-[#6B5CE7] hover:bg-[#5A4BD6] text-white text-sm transition-colors"
                 >
                   前往配置
                 </Link>
@@ -736,37 +736,37 @@ export default function GuidePage() {
                     <button
                       key={workflow.id}
                       onClick={() => setSelectedWorkflowId(workflow.id)}
-                      className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
+                      className={`w-full p-4 rounded-xl border transition-all text-left ${
                         selectedWorkflowId === workflow.id
-                          ? "border-indigo-500 bg-indigo-50"
-                          : "border-gray-200 bg-white hover:border-gray-300"
+                          ? "border-[#6B5CE7] bg-[#F8F7FF]"
+                          : "border-[#E5E5E5] bg-white hover:border-[#D0D0D0] hover:bg-[#F9F9F9]"
                       }`}
                     >
                       <div className="flex items-start justify-between">
                         <div>
-                          <h3 className="font-medium text-gray-800 flex items-center gap-2">
+                          <h3 className="font-medium text-[#1A1A1A] flex items-center gap-2">
                             {workflow.name}
                             {workflow.isDefault && (
-                              <span className="text-xs bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded">
+                              <span className="text-xs bg-[#F0F0F0] text-[#666666] px-2 py-0.5 rounded">
                                 默认
                               </span>
                             )}
                             {rec && (
-                              <span className="text-xs bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded">
+                              <span className="text-xs bg-[#F0EEFF] text-[#6B5CE7] px-2 py-0.5 rounded">
                                 推荐 {rec.matchScore}%
                               </span>
                             )}
                           </h3>
-                          <p className="text-sm text-gray-500 mt-1">{workflow.description || "暂无描述"}</p>
+                          <p className="text-sm text-[#666666] mt-1">{workflow.description || "暂无描述"}</p>
                           {rec && (
-                            <p className="text-xs text-indigo-500 mt-2">💡 {rec.reason}</p>
+                            <p className="text-xs text-[#6B5CE7] mt-2">{rec.reason}</p>
                           )}
                         </div>
                         <div
-                          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                          className={`w-6 h-6 rounded-full border flex items-center justify-center ${
                             selectedWorkflowId === workflow.id
-                              ? "border-indigo-500 bg-indigo-500"
-                              : "border-gray-300"
+                              ? "border-[#6B5CE7] bg-[#6B5CE7]"
+                              : "border-[#D0D0D0]"
                           }`}
                         >
                           {selectedWorkflowId === workflow.id && (
@@ -783,14 +783,14 @@ export default function GuidePage() {
             <div className="flex gap-3">
               <button
                 onClick={goBack}
-                className="px-6 py-3 rounded-xl bg-gray-100 text-gray-600 font-medium hover:bg-gray-200 transition-colors"
+                className="px-6 py-3 rounded-lg bg-white border border-[#E5E5E5] text-[#666666] font-medium hover:bg-[#F9F9F9] hover:border-[#D0D0D0] transition-colors"
               >
                 上一步
               </button>
               <button
                 onClick={handleStep4Next}
                 disabled={isLoading || workflows.length === 0}
-                className="flex-1 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow-lg shadow-purple-500/30 hover:shadow-xl disabled:opacity-50 transition-all"
+                className="flex-1 py-3 rounded-xl bg-[#6B5CE7] hover:bg-[#5A4BD6] text-white font-medium disabled:opacity-50 transition-colors"
               >
                 {isLoading ? "生成中..." : "生成内容"}
               </button>
@@ -808,30 +808,30 @@ export default function GuidePage() {
               {isStreaming ? "内容正在生成，请稍候..." : "以下是根据你的需求生成的内容"}
             </p>
 
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-6">
+            <div className="bg-white rounded-xl border border-[#E5E5E5] overflow-hidden mb-6">
               {/* Title */}
               {result?.title && (
-                <div className="px-5 py-4 border-b border-gray-100 bg-gray-50">
-                  <h3 className="text-lg font-semibold text-gray-800">{result.title}</h3>
+                <div className="px-5 py-4 border-b border-[#E5E5E5] bg-[#FAFAFA]">
+                  <h3 className="text-lg font-semibold text-[#1A1A1A]">{result.title}</h3>
                 </div>
               )}
 
               {/* Images */}
               {result?.images && result.images.length > 0 && (
-                <div className="p-4 bg-gray-50/50 border-b border-gray-100">
+                <div className="p-4 bg-[#FAFAFA] border-b border-[#E5E5E5]">
                   {result.images.length > 1 && (
                     <div className="flex justify-end mb-3">
                       <button
                         onClick={() => result.images?.forEach((img, i) => downloadImage(img, `image-${i + 1}.jpg`))}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#6B5CE7] hover:bg-[#5A4BD6] text-white text-xs font-medium transition-colors"
                       >
-                        📦 下载全部 ({result.images.length})
+                        下载全部 ({result.images.length})
                       </button>
                     </div>
                   )}
                   <div className={`grid gap-4 ${result.images.length === 1 ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"}`}>
                     {result.images.map((img, idx) => (
-                      <div key={idx} className="rounded-xl overflow-hidden bg-white border border-gray-200 shadow-sm">
+                      <div key={idx} className="rounded-xl overflow-hidden bg-white border border-[#E5E5E5]">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={img}
@@ -839,12 +839,12 @@ export default function GuidePage() {
                           className="w-full h-auto object-contain"
                           style={{ maxHeight: '400px' }}
                         />
-                        <div className="px-3 py-2 bg-gray-50 border-t border-gray-100">
+                        <div className="px-3 py-2 bg-[#FAFAFA] border-t border-[#E5E5E5]">
                           <button
                             onClick={() => downloadImage(img, `image-${idx + 1}.jpg`)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium transition-colors w-full justify-center"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#6B5CE7] hover:bg-[#5A4BD6] text-white text-xs font-medium transition-colors w-full justify-center"
                           >
-                            ⬇️ 下载
+                            下载
                           </button>
                         </div>
                       </div>
@@ -855,23 +855,23 @@ export default function GuidePage() {
 
               {/* Content - Show streaming content or final result */}
               <div className="px-5 py-4">
-                <div className="article-content text-gray-700 prose prose-sm max-w-none">
+                <div className="article-content text-[#1A1A1A] prose prose-sm max-w-none">
                   {isStreaming && streamingContent ? (
                     <>
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>
                         {streamingContent}
                       </ReactMarkdown>
-                      <span className="inline-block w-2 h-4 bg-indigo-500 animate-pulse ml-1" />
+                      <span className="inline-block w-2 h-4 bg-[#6B5CE7] animate-pulse ml-1" />
                     </>
                   ) : result?.content ? (
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                       {result.content}
                     </ReactMarkdown>
                   ) : isStreaming ? (
-                    <div className="flex items-center gap-2 text-gray-400">
-                      <span className="inline-block w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <span className="inline-block w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <span className="inline-block w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    <div className="flex items-center gap-2 text-[#999999]">
+                      <span className="inline-block w-2 h-2 bg-[#6B5CE7] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <span className="inline-block w-2 h-2 bg-[#6B5CE7] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <span className="inline-block w-2 h-2 bg-[#6B5CE7] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                       <span className="ml-2">正在生成...</span>
                     </div>
                   ) : null}
@@ -880,12 +880,12 @@ export default function GuidePage() {
 
               {/* Actions */}
               {!isStreaming && result && (
-                <div className="px-5 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-end gap-2">
+                <div className="px-5 py-3 border-t border-[#E5E5E5] bg-[#FAFAFA] flex items-center justify-end gap-2">
                   <button
                     onClick={() => copyContent(result.content || "")}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white hover:bg-gray-100 text-gray-600 text-sm font-medium transition-colors border border-gray-200"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white hover:bg-[#F9F9F9] text-[#666666] text-sm font-medium transition-colors border border-[#E5E5E5]"
                   >
-                    📋 复制全文
+                    复制全文
                   </button>
                 </div>
               )}
@@ -894,7 +894,7 @@ export default function GuidePage() {
             <div className="flex gap-3">
               <Link
                 href="/"
-                className="px-6 py-3 rounded-xl bg-gray-100 text-gray-600 font-medium hover:bg-gray-200 transition-colors text-center"
+                className="px-6 py-3 rounded-lg bg-white border border-[#E5E5E5] text-[#666666] font-medium hover:bg-[#F9F9F9] hover:border-[#D0D0D0] transition-colors text-center"
               >
                 返回首页
               </Link>
@@ -902,9 +902,9 @@ export default function GuidePage() {
               <button
                 onClick={handleRegenerate}
                 disabled={isLoading || isStreaming}
-                className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-medium shadow-lg shadow-amber-500/30 hover:shadow-xl disabled:opacity-50 transition-all"
+                className="px-6 py-3 rounded-lg bg-white border border-[#6B5CE7] text-[#6B5CE7] font-medium hover:bg-[#F0EEFF] disabled:opacity-50 transition-colors"
               >
-                {isLoading || isStreaming ? "生成中..." : "🔄 再换一篇"}
+                {isLoading || isStreaming ? "生成中..." : "再换一篇"}
               </button>
               {/* 重新创作 - 回到第一步 */}
               <button
@@ -926,9 +926,9 @@ export default function GuidePage() {
                   setImageCount("0");
                 }}
                 disabled={isLoading || isStreaming}
-                className="flex-1 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow-lg shadow-purple-500/30 hover:shadow-xl disabled:opacity-50 transition-all"
+                className="flex-1 py-3 rounded-lg bg-[#6B5CE7] hover:bg-[#5A4BD6] text-white font-medium disabled:opacity-50 transition-colors"
               >
-                ✨ 重新创作
+                重新创作
               </button>
             </div>
           </div>
