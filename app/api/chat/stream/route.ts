@@ -3,12 +3,15 @@ import { getWorkflow, getDefaultWorkflow, Workflow } from "@/lib/workflows";
 import { logApiCall } from "@/lib/api-logger";
 
 // 构建请求参数
-function buildPayload(workflow: Workflow, userInput: string): Record<string, unknown> {
+function buildPayload(workflow: Workflow, userInput: string, imageCount: number = 0): Record<string, unknown> {
   // 如果有参数模板，使用模板并填充用户输入
   if (workflow.paramTemplate && workflow.inputField) {
     try {
       const template = JSON.parse(workflow.paramTemplate);
       template[workflow.inputField] = userInput;
+      // 添加图片数量参数
+      template.image_count = imageCount;
+      template.generate_images = imageCount > 0;
       return template;
     } catch {
       // 解析失败，使用默认参数
@@ -28,6 +31,11 @@ function buildPayload(workflow: Workflow, userInput: string): Record<string, unk
     search_time_range: "",
     publish_to_wechat: false,
     is_api_call: true,
+    // 图片相关参数
+    image_count: imageCount,
+    generate_images: imageCount > 0,
+    need_cover_image: imageCount > 0,
+    illustration_count: imageCount,
   };
 }
 
@@ -36,7 +44,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { message, workflowId } = body;
+    const { message, workflowId, imageCount = 0 } = body;
 
     if (!message) {
       return new Response(
@@ -76,7 +84,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 构建工作流参数
-    const payload = buildPayload(workflow, message);
+    const payload = buildPayload(workflow, message, imageCount);
 
     // 创建流式响应
     const stream = new ReadableStream({

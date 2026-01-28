@@ -32,54 +32,128 @@ function parseCurlCommand(curl: string): {
   token?: string;
 } | null {
   try {
-    // 提取 --data 或 -d 部分（使用 [\s\S] 代替 . 以匹配换行）
-    const dataMatch = curl.match(/(?:--data|-d)\s+['"]([^'"]+)['"]/);
-    if (!dataMatch) return null;
+    // 预处理：移除换行符和多余空格，统一格式
+    const normalizedCurl = curl
+      .replace(/\\\s*\n/g, ' ')  // 移除行尾的 \ 和换行
+      .replace(/\n/g, ' ')       // 移除所有换行
+      .replace(/\s+/g, ' ')      // 合并多余空格
+      .trim();
 
-    const jsonStr = dataMatch[1];
-    const paramTemplate = JSON.parse(jsonStr);
+    // 提取 URL（支持多种格式）
+    let endpoint: string | undefined;
+    // 格式1: --location 'url' 或 --location "url"
+    const locationMatch = normalizedCurl.match(/--location\s+['"]?(https?:\/\/[^\s'"]+)['"]?/i);
+    if (locationMatch) {
+      endpoint = locationMatch[1];
+    } else {
+      // 格式2: curl 'url' 或 curl "url" 或 curl url
+      const urlMatch = normalizedCurl.match(/curl\s+(?:-[^\s]+\s+)*['"]?(https?:\/\/[^\s'"]+)['"]?/i);
+      if (urlMatch) {
+        endpoint = urlMatch[1];
+      } else {
+        // 格式3: URL 在命令末尾或中间
+        const anyUrlMatch = normalizedCurl.match(/['"]?(https?:\/\/[^\s'"]+)['"]?/);
+        if (anyUrlMatch) {
+          endpoint = anyUrlMatch[1];
+        }
+      }
+    }
 
-    // 尝试提取 endpoint
-    const urlMatch = curl.match(/(?:--location|curl)\s+['"](https?:\/\/[^'"]+)['"]/);
-    const endpoint = urlMatch ? urlMatch[1] : undefined;
+    // 提取 Token（支持 -H 和 --header）
+    let token: string | undefined;
+    const authMatch = normalizedCurl.match(/(?:-H|--header)\s+['"]?Authorization:\s*Bearer\s+([^\s'"]+)['"]?/i);
+    if (authMatch) {
+      token = authMatch[1];
+    }
 
-    // 尝试提取 token
-    const tokenMatch = curl.match(/Authorization:\s*Bearer\s+([^'"]+)/);
-    const token = tokenMatch ? tokenMatch[1].trim() : undefined;
+    // 提取 data（支持 -d, --data, --data-raw 等）
+    let jsonStr: string | undefined;
 
-    // 自动识别用户输入字段
-    const fields = Object.keys(paramTemplate);
-    let inputField = "";
+    // 方法1: 尝试匹配 --data/-d 后面的 JSON
+    const dataPatterns = [
+      /(?:--data-raw|--data|-d)\s+\$?'(\{[\s\S]*?\})'/,  // $'{...}' 或 '{...}'
+      /(?:--data-raw|--data|-d)\s+"(\{[\s\S]*?\})"/,     // "{...}"
+      /(?:--data-raw|--data|-d)\s+'(\{[\s\S]*?\})'/,     // '{...}'
+      /(?:--data-raw|--data|-d)\s+(\{[^}]+\})/,          // {...} 无引号
+    ];
 
-    for (const pattern of INPUT_FIELD_PATTERNS) {
-      const found = fields.find(
-        (f) => f.toLowerCase() === pattern.toLowerCase()
-      );
-      if (found) {
-        inputField = found;
+    for (const pattern of dataPatterns) {
+      const match = normalizedCurl.match(pattern);
+      if (match) {
+        jsonStr = match[1];
         break;
       }
     }
 
-    if (!inputField) {
+    // 方法2: 如果上面没找到，尝试提取最后一个 JSON 对象
+    if (!jsonStr) {
+      const jsonMatch = normalizedCurl.match(/\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g);
+      if (jsonMatch && jsonMatch.length > 0) {
+        // 取最后一个（通常是 data）
+        jsonStr = jsonMatch[jsonMatch.length - 1];
+      }
+    }
+
+    if (!jsonStr) {
+      return null;
+    }
+
+    // 清理 JSON 字符串
+    jsonStr = jsonStr
+      .replace(/\\'/g, "'")      // 还原转义的单引号
+      .replace(/\\"/g, '"')      // 还原转义的双引号
+      .replace(/\\\\/g, '\\');   // 还原转义的反斜杠
+
+    const paramTemplate = JSON.parse(jsonStr);
+
+    // 自动识别用户输入字段（递归搜索嵌套对象）
+    const findInputField = (obj: Record<string, unknown>, prefix = ""): string => {
+      const fields = Object.keys(obj);
+
+      // 先在当前层级精确匹配
+      for (const pattern of INPUT_FIELD_PATTERNS) {
+        const found = fields.find(
+          (f) => f.toLowerCase() === pattern.toLowerCase()
+        );
+        if (found) {
+          return prefix ? `${prefix}.${found}` : found;
+        }
+      }
+
+      // 再在当前层级模糊匹配
       for (const pattern of INPUT_FIELD_PATTERNS) {
         const found = fields.find((f) =>
           f.toLowerCase().includes(pattern.toLowerCase())
         );
         if (found) {
-          inputField = found;
-          break;
+          return prefix ? `${prefix}.${found}` : found;
         }
       }
-    }
 
-    if (!inputField) {
-      inputField =
-        fields.find((f) => typeof paramTemplate[f] === "string") || fields[0];
-    }
+      // 递归搜索嵌套对象（如 parameters）
+      for (const field of fields) {
+        if (typeof obj[field] === "object" && obj[field] !== null && !Array.isArray(obj[field])) {
+          const nested = findInputField(obj[field] as Record<string, unknown>, prefix ? `${prefix}.${field}` : field);
+          if (nested) {
+            return nested;
+          }
+        }
+      }
+
+      // 返回第一个字符串字段
+      const stringField = fields.find((f) => typeof obj[f] === "string");
+      if (stringField) {
+        return prefix ? `${prefix}.${stringField}` : stringField;
+      }
+
+      return prefix ? `${prefix}.${fields[0]}` : fields[0] || "";
+    };
+
+    const inputField = findInputField(paramTemplate);
 
     return { paramTemplate, inputField, endpoint, token };
-  } catch {
+  } catch (e) {
+    console.error("Parse curl error:", e);
     return null;
   }
 }

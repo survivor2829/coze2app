@@ -62,6 +62,7 @@ export default function GuidePage() {
   const [wordCount, setWordCount] = useState<string>("1000");
   const [customWordCount, setCustomWordCount] = useState("");
   const [isRegeneratingPrompt, setIsRegeneratingPrompt] = useState(false);
+  const [imageCount, setImageCount] = useState<string>("0");
 
   const totalSteps = 5;
   const contentType = selectedType === "other" ? customType : CONTENT_TYPES.find(t => t.id === selectedType)?.name || "";
@@ -73,6 +74,13 @@ export default function GuidePage() {
     { value: "1000", label: "中等 (约1000字)", description: "详略得当，信息丰富" },
     { value: "2000", label: "长文 (约2000字)", description: "深度分析，全面详尽" },
     { value: "custom", label: "自定义", description: "输入你需要的字数" },
+  ];
+
+  // Image count options
+  const IMAGE_COUNT_OPTIONS = [
+    { value: "0", label: "不需要配图", description: "节省积分，纯文字内容", icon: "📝" },
+    { value: "1", label: "1张配图", description: "简洁配图，画龙点睛", icon: "🖼️" },
+    { value: "2", label: "2张配图", description: "图文并茂，更加丰富", icon: "🎨" },
   ];
 
   // Step 1: Select content type
@@ -238,6 +246,7 @@ export default function GuidePage() {
         body: JSON.stringify({
           message: editablePrompt,
           workflowId: selectedWorkflowId,
+          imageCount: parseInt(imageCount),
         }),
       });
 
@@ -249,6 +258,7 @@ export default function GuidePage() {
           body: JSON.stringify({
             message: editablePrompt,
             workflowId: selectedWorkflowId,
+            imageCount: parseInt(imageCount),
           }),
         });
         const data = await fallbackResponse.json();
@@ -516,6 +526,31 @@ export default function GuidePage() {
                   />
                 </div>
               )}
+            </div>
+
+            {/* Image Count Selector */}
+            <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
+              <label className="block text-sm font-medium text-gray-800 mb-3">
+                AI配图数量
+              </label>
+              <div className="grid grid-cols-3 gap-3">
+                {IMAGE_COUNT_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setImageCount(option.value)}
+                    className={`p-3 rounded-lg border-2 text-center transition-all ${
+                      imageCount === option.value
+                        ? "border-indigo-500 bg-indigo-50"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <span className="text-2xl block mb-1">{option.icon}</span>
+                    <span className="font-medium text-gray-800 block text-sm">{option.label}</span>
+                    <span className="text-xs text-gray-500">{option.description}</span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="space-y-6 mb-6">
@@ -886,6 +921,9 @@ export default function GuidePage() {
                   setSelectedWorkflowId("");
                   setResult(null);
                   setStreamingContent("");
+                  setWordCount("1000");
+                  setCustomWordCount("");
+                  setImageCount("0");
                 }}
                 disabled={isLoading || isStreaming}
                 className="flex-1 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow-lg shadow-purple-500/30 hover:shadow-xl disabled:opacity-50 transition-all"
