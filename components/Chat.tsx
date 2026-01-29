@@ -35,8 +35,16 @@ export default function Chat() {
   const [showPromptEditor, setShowPromptEditor] = useState(false);
   const [editablePrompt, setEditablePrompt] = useState("");
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Toast helper
+  const showToast = useCallback((message: string) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 2000);
+  }, []);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -50,7 +58,20 @@ export default function Chat() {
     inputRef.current?.focus();
   }, []);
 
-  // 加载工作流列表
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowWorkflowSelector(false);
+      }
+    };
+    if (showWorkflowSelector) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [showWorkflowSelector]);
+
+  // Load workflows
   useEffect(() => {
     const loadWorkflows = async () => {
       try {
@@ -78,7 +99,7 @@ export default function Chat() {
     loadWorkflows();
   }, []);
 
-  // 生成智能引导问题
+  // Generate smart prompts
   const generateSmartPrompts = useCallback(async () => {
     if (workflows.length === 0) return;
     setIsLoadingPrompts(true);
@@ -88,7 +109,6 @@ export default function Chat() {
       ? `当前工作流：${selectedWorkflow.name}，${selectedWorkflow.description || "通用创作助手"}`
       : "通用 AI 创作助手";
 
-    // 根据工作流类型生成相关的引导问题
     const prompts = generateContextualPrompts(workflowContext, selectedWorkflow?.name || "");
     setSmartPrompts(prompts);
     setIsLoadingPrompts(false);
@@ -108,7 +128,6 @@ export default function Chat() {
 
   const selectedWorkflow = workflows.find((w) => w.id === selectedWorkflowId);
 
-  // 获取推荐的工作流
   const getRecommendedWorkflow = (userInput: string): PublicWorkflow | null => {
     if (workflows.length <= 1) return null;
 
@@ -121,7 +140,7 @@ export default function Chat() {
 
     for (const workflow of workflows) {
       const nameLower = workflow.name.toLowerCase();
-      for (const [key, words] of Object.entries(keywords)) {
+      for (const [, words] of Object.entries(keywords)) {
         if (words.some(w => nameLower.includes(w.toLowerCase()))) {
           if (words.some(w => inputLower.includes(w.toLowerCase()))) {
             return workflow;
@@ -203,6 +222,7 @@ export default function Chat() {
 
   const copyContent = (text: string) => {
     navigator.clipboard.writeText(text);
+    showToast("已复制到剪贴板");
   };
 
   const downloadImage = async (url: string, filename: string) => {
@@ -217,6 +237,7 @@ export default function Chat() {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(blobUrl);
+      showToast("下载已开始");
     } catch (error) {
       console.error("Download failed:", error);
       window.open(url, "_blank");
@@ -225,62 +246,75 @@ export default function Chat() {
 
   return (
     <div className="min-h-screen bg-animate flex flex-col">
-      {/* 头部 */}
+      {/* Header */}
       <header className="glass sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#6B5CE7] flex items-center justify-center">
-              <span className="text-white text-lg">AI</span>
+        <div className="max-w-4xl mx-auto px-4 py-3.5 flex items-center justify-between">
+          <a href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6B5CE7] to-[#8B5CF6] flex items-center justify-center shadow-md shadow-purple-500/20">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-[#1A1A1A]">
+              <h1 className="text-base font-semibold text-[#111827]">
                 {selectedWorkflow?.name || "AI 创作助手"}
               </h1>
-              <p className="text-xs text-[#666666]">
+              <p className="text-xs text-[#6B7280]">
                 {selectedWorkflow?.description || "输入主题，智能创作"}
               </p>
             </div>
-          </div>
-          <div className="flex items-center gap-3">
-            {/* 工作流选择器 */}
+          </a>
+          <div className="flex items-center gap-2.5">
+            {/* Workflow selector */}
             {workflows.length > 1 && (
-              <div className="relative">
+              <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setShowWorkflowSelector(!showWorkflowSelector)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-[#E5E5E5] hover:bg-[#F9F9F9] hover:border-[#D0D0D0] transition-colors text-sm"
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/80 border border-[#E5E7EB] hover:bg-white hover:border-[#D1D5DB] transition-all text-sm"
                 >
-                  <span className="text-[#6B5CE7]">⚡</span>
-                  <span className="text-[#1A1A1A] max-w-[100px] truncate">
+                  <span className="text-[#6B5CE7]">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </span>
+                  <span className="text-[#111827] max-w-[100px] truncate font-medium">
                     {selectedWorkflow?.name || "选择工作流"}
                   </span>
                   <ChevronIcon />
                 </button>
                 {showWorkflowSelector && (
-                  <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl border border-[#E5E5E5] shadow-lg overflow-hidden z-50">
-                    <div className="p-2 border-b border-[#E5E5E5]">
-                      <p className="text-xs text-[#999999] px-2">选择工作流</p>
+                  <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl border border-[#E5E7EB] shadow-lg overflow-hidden z-50 animate-scale-in">
+                    <div className="p-3 border-b border-[#F3F4F6]">
+                      <p className="text-xs font-medium text-[#9CA3AF] px-1">选择工作流</p>
                     </div>
                     <div className="p-2 max-h-64 overflow-y-auto">
                       {workflows.map((workflow) => (
                         <button
                           key={workflow.id}
                           onClick={() => handleSelectWorkflow(workflow.id)}
-                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-colors ${
+                          className={`w-full text-left px-3 py-2.5 rounded-xl transition-all ${
                             workflow.id === selectedWorkflowId
-                              ? "bg-[#F0EEFF] text-[#6B5CE7]"
-                              : "hover:bg-[#F9F9F9] text-[#1A1A1A]"
+                              ? "bg-[#EDE9FE] text-[#6B5CE7]"
+                              : "hover:bg-[#F9FAFB] text-[#111827]"
                           }`}
                         >
                           <div className="flex items-center justify-between">
-                            <span className="font-medium">{workflow.name}</span>
-                            {workflow.isDefault && (
-                              <span className="text-xs text-[#666666] bg-[#F0F0F0] px-1.5 py-0.5 rounded">
-                                默认
-                              </span>
-                            )}
+                            <span className="font-medium text-sm">{workflow.name}</span>
+                            <div className="flex items-center gap-1.5">
+                              {workflow.isDefault && (
+                                <span className="text-xs text-[#6B7280] bg-[#F3F4F6] px-1.5 py-0.5 rounded">
+                                  默认
+                                </span>
+                              )}
+                              {workflow.id === selectedWorkflowId && (
+                                <svg className="w-4 h-4 text-[#6B5CE7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              )}
+                            </div>
                           </div>
                           {workflow.description && (
-                            <p className="text-xs text-[#666666] mt-0.5 line-clamp-2">
+                            <p className="text-xs text-[#6B7280] mt-0.5 line-clamp-2">
                               {workflow.description}
                             </p>
                           )}
@@ -291,10 +325,10 @@ export default function Chat() {
                 )}
               </div>
             )}
-            {/* 状态指示器 */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-[#E5E5E5]">
-              <span className={`w-2 h-2 rounded-full ${isLoading ? "bg-amber-400 animate-pulse" : workflows.length === 0 && isWorkflowsLoaded ? "bg-gray-400" : "bg-[#6B5CE7]"}`} />
-              <span className="text-xs text-[#666666]">
+            {/* Status indicator */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/80 border border-[#E5E7EB]">
+              <span className={`w-2 h-2 rounded-full ${isLoading ? "bg-amber-400 animate-pulse" : workflows.length === 0 && isWorkflowsLoaded ? "bg-gray-400" : "bg-emerald-500"}`} />
+              <span className="text-xs text-[#6B7280] font-medium">
                 {isLoading ? "创作中" : workflows.length === 0 && isWorkflowsLoaded ? "未配置" : "在线"}
               </span>
             </div>
@@ -302,42 +336,47 @@ export default function Chat() {
         </div>
       </header>
 
-      {/* 消息区域 */}
+      {/* Messages */}
       <main className="flex-1 overflow-y-auto">
         <div className="max-w-4xl mx-auto px-4 py-8">
-          {/* 欢迎界面 */}
+          {/* Welcome */}
           {messages.length === 0 && isWorkflowsLoaded && (
             <div className="flex flex-col items-center justify-center py-12 animate-fade-in">
               {workflows.length === 0 ? (
                 <>
-                  <div className="w-16 h-16 rounded-2xl bg-[#F0F0F0] flex items-center justify-center mb-6">
-                    <span className="text-3xl">⚙️</span>
+                  <div className="w-16 h-16 rounded-2xl bg-[#F3F4F6] flex items-center justify-center mb-6">
+                    <svg className="w-8 h-8 text-[#9CA3AF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 011.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.56.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.893.149c-.425.07-.765.383-.93.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 01-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.397.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 01-.12-1.45l.527-.737c.25-.35.273-.806.108-1.204-.165-.397-.505-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.107-1.204l-.527-.738a1.125 1.125 0 01.12-1.45l.773-.773a1.125 1.125 0 011.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
                   </div>
-                  <h2 className="text-xl font-semibold text-[#1A1A1A] mb-3">暂未配置服务</h2>
-                  <p className="text-[#666666] mb-6">请联系管理员在后台添加工作流配置</p>
+                  <h2 className="text-xl font-semibold text-[#111827] mb-3">暂未配置服务</h2>
+                  <p className="text-[#6B7280] mb-6">请联系管理员在后台添加工作流配置</p>
                   <a
                     href="/admin"
-                    className="px-4 py-2 rounded-lg bg-[#6B5CE7] hover:bg-[#5A4BD6] text-white font-medium transition-colors"
+                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#6B5CE7] to-[#8B5CF6] hover:shadow-lg hover:shadow-purple-500/25 text-white font-medium transition-all"
                   >
                     前往后台配置
                   </a>
                 </>
               ) : (
                 <>
-                  <div className="w-16 h-16 rounded-2xl bg-[#6B5CE7] flex items-center justify-center mb-6">
-                    <span className="text-3xl text-white">AI</span>
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#6B5CE7] to-[#8B5CF6] flex items-center justify-center mb-6 shadow-lg shadow-purple-500/20">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                    </svg>
                   </div>
-                  <h2 className="text-xl font-semibold text-[#1A1A1A] mb-2">你好，有什么可以帮你？</h2>
-                  <p className="text-[#666666] mb-8">选择一个话题开始，或者直接输入你的想法</p>
+                  <h2 className="text-xl font-semibold text-[#111827] mb-2">你好，有什么可以帮你？</h2>
+                  <p className="text-[#6B7280] mb-8">选择一个话题开始，或者直接输入你的想法</p>
 
-                  {/* 智能引导问题 */}
+                  {/* Smart prompts */}
                   <div className="w-full max-w-2xl">
                     <div className="flex items-center gap-2 mb-4">
-                      <span className="text-sm text-[#999999]">智能推荐</span>
+                      <span className="text-sm text-[#9CA3AF]">智能推荐</span>
                       <button
                         onClick={generateSmartPrompts}
                         disabled={isLoadingPrompts}
-                        className="text-[#6B5CE7] hover:text-[#5A4BD6] text-sm transition-colors"
+                        className="text-[#6B5CE7] hover:text-[#5A4BD6] text-sm font-medium transition-colors"
                       >
                         {isLoadingPrompts ? "生成中..." : "换一批"}
                       </button>
@@ -347,10 +386,14 @@ export default function Chat() {
                         <button
                           key={idx}
                           onClick={() => handleQuickPrompt(prompt)}
-                          className="p-4 text-left rounded-xl bg-white border border-[#E5E5E5] hover:border-[#D0D0D0] hover:bg-[#F9F9F9] text-[#1A1A1A] text-sm transition-all group"
+                          className="p-4 text-left rounded-2xl bg-white border border-[#E5E7EB] hover:border-[#D1D5DB] text-[#111827] text-sm transition-all group card-glow"
                         >
                           <span className="group-hover:text-[#6B5CE7] transition-colors line-clamp-2">{prompt}</span>
-                          <span className="float-right text-[#D0D0D0] group-hover:text-[#6B5CE7] transition-colors mt-1">→</span>
+                          <span className="float-right text-[#D1D5DB] group-hover:text-[#6B5CE7] transition-colors mt-1">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </span>
                         </button>
                       ))}
                     </div>
@@ -360,38 +403,40 @@ export default function Chat() {
             </div>
           )}
 
-          {/* 加载中 */}
+          {/* Loading state */}
           {messages.length === 0 && !isWorkflowsLoaded && (
             <div className="flex flex-col items-center justify-center py-20 animate-fade-in">
-              <div className="w-16 h-16 rounded-2xl bg-[#6B5CE7] flex items-center justify-center mb-6 animate-pulse">
-                <span className="text-3xl text-white">AI</span>
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#6B5CE7] to-[#8B5CF6] flex items-center justify-center mb-6 animate-pulse shadow-lg shadow-purple-500/20">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                </svg>
               </div>
-              <p className="text-[#666666]">加载中...</p>
+              <p className="text-[#6B7280]">加载中...</p>
             </div>
           )}
 
-          {/* 消息列表 */}
+          {/* Message list */}
           <div className="space-y-6">
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} animate-slide-up`}
+                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} animate-fade-in-up`}
               >
                 {message.role === "user" ? (
-                  <div className="max-w-[85%] bg-[#6B5CE7] text-white rounded-2xl rounded-tr-md px-5 py-3">
-                    <p className="whitespace-pre-wrap">{message.content}</p>
+                  <div className="max-w-[85%] bg-gradient-to-br from-[#6B5CE7] to-[#7C6CF0] text-white rounded-2xl rounded-tr-md px-5 py-3 shadow-md shadow-purple-500/10">
+                    <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
                   </div>
                 ) : (
                   <div className="max-w-[90%] space-y-4">
-                    <div className="bg-white rounded-2xl rounded-tl-md border border-[#E5E5E5] overflow-hidden">
-                      {/* 标题 */}
+                    <div className="bg-white rounded-2xl rounded-tl-md border border-[#E5E7EB] overflow-hidden shadow-sm">
+                      {/* Title */}
                       {message.title && (
-                        <div className="px-5 py-4 border-b border-[#E5E5E5] bg-[#FAFAFA]">
+                        <div className="px-5 py-4 border-b border-[#F3F4F6] bg-gradient-to-r from-[#FAFAFF] to-[#F9FAFB]">
                           <div className="flex items-start justify-between gap-3">
-                            <h3 className="text-lg font-semibold text-[#1A1A1A]">{message.title}</h3>
+                            <h3 className="text-lg font-semibold text-[#111827]">{message.title}</h3>
                             <button
                               onClick={() => copyContent(message.title || "")}
-                              className="flex-shrink-0 p-1.5 rounded-lg hover:bg-[#F0F0F0] text-[#999999] hover:text-[#666666] transition-colors"
+                              className="flex-shrink-0 p-1.5 rounded-lg hover:bg-[#F3F4F6] text-[#9CA3AF] hover:text-[#6B7280] transition-colors"
                               title="复制标题"
                             >
                               <CopyIcon />
@@ -400,15 +445,14 @@ export default function Chat() {
                         </div>
                       )}
 
-                      {/* 图片展示 */}
+                      {/* Images */}
                       {message.images && message.images.length > 0 && (
-                        <div className="p-4 bg-[#FAFAFA]">
-                          {/* 多张图片时显示下载全部按钮 */}
+                        <div className="p-4 bg-[#FAFAFF]">
                           {message.images.length > 1 && (
                             <div className="flex justify-end mb-3">
                               <button
                                 onClick={() => message.images?.forEach((img, i) => downloadImage(img, `image-${i + 1}.jpg`))}
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#6B5CE7] hover:bg-[#5A4BD6] text-white text-xs font-medium transition-colors"
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#6B5CE7] to-[#8B5CF6] hover:shadow-md hover:shadow-purple-500/20 text-white text-xs font-medium transition-all"
                               >
                                 <DownloadIcon />
                                 下载全部 ({message.images.length})
@@ -417,22 +461,27 @@ export default function Chat() {
                           )}
                           <div className={`grid gap-4 ${message.images.length === 1 ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"}`}>
                             {message.images.map((img, idx) => (
-                              <div key={idx} className="rounded-xl overflow-hidden bg-white border border-[#E5E5E5]">
-                                {/* 图片区域 */}
+                              <div key={idx} className="rounded-xl overflow-hidden bg-white border border-[#E5E7EB] group">
                                 <div
-                                  className="cursor-pointer bg-[#FAFAFA]"
+                                  className="cursor-pointer bg-[#F9FAFB] relative overflow-hidden"
                                   onClick={() => setLightboxImage(img)}
                                 >
                                   {/* eslint-disable-next-line @next/next/no-img-element */}
                                   <img
                                     src={img}
                                     alt={`配图 ${idx + 1}`}
-                                    className="w-full h-auto object-contain"
+                                    className="w-full h-auto object-contain group-hover:scale-[1.02] transition-transform duration-300"
                                     style={{ maxHeight: '400px' }}
                                   />
+                                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors flex items-center justify-center">
+                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 rounded-full p-2 shadow-md">
+                                      <svg className="w-5 h-5 text-[#4B5563]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                                      </svg>
+                                    </div>
+                                  </div>
                                 </div>
-                                {/* 每张图片下方的下载按钮 */}
-                                <div className="px-3 py-2 bg-[#FAFAFA] border-t border-[#E5E5E5]">
+                                <div className="px-3 py-2.5 bg-[#F9FAFB] border-t border-[#F3F4F6]">
                                   <button
                                     onClick={() => downloadImage(img, `image-${idx + 1}.jpg`)}
                                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#6B5CE7] hover:bg-[#5A4BD6] text-white text-xs font-medium transition-colors w-full justify-center"
@@ -447,33 +496,33 @@ export default function Chat() {
                         </div>
                       )}
 
-                      {/* 正文内容 - 支持 Markdown 渲染 */}
+                      {/* Content */}
                       <div className="px-5 py-4">
-                        <div className="article-content text-[#1A1A1A] prose prose-sm max-w-none">
+                        <div className="article-content text-[#111827] prose prose-sm max-w-none">
                           <ReactMarkdown remarkPlugins={[remarkGfm]}>
                             {message.content}
                           </ReactMarkdown>
                         </div>
                       </div>
 
-                      {/* 操作栏 */}
-                      <div className="px-5 py-3 border-t border-[#E5E5E5] bg-[#FAFAFA] flex items-center justify-between">
-                        <span className="text-xs text-[#999999]">
+                      {/* Actions */}
+                      <div className="px-5 py-3 border-t border-[#F3F4F6] bg-[#FAFAFF] flex items-center justify-between">
+                        <span className="text-xs text-[#9CA3AF]">
                           {message.timestamp.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })}
                         </span>
                         <div className="flex items-center gap-2">
                           {message.images && message.images.length > 0 && (
                             <button
                               onClick={() => message.images?.forEach((img, i) => downloadImage(img, `image-${i + 1}.jpg`))}
-                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#F9F9F9] text-[#666666] text-xs font-medium transition-colors border border-[#E5E5E5]"
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#F9FAFB] text-[#6B7280] text-xs font-medium transition-colors border border-[#E5E7EB]"
                             >
                               <DownloadIcon />
-                              下载全部图片
+                              下载图片
                             </button>
                           )}
                           <button
                             onClick={() => copyContent(message.content)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#F9F9F9] text-[#666666] text-xs font-medium transition-colors border border-[#E5E5E5]"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#F9FAFB] text-[#6B7280] text-xs font-medium transition-colors border border-[#E5E7EB]"
                           >
                             <CopyIcon />
                             复制全文
@@ -486,17 +535,17 @@ export default function Chat() {
               </div>
             ))}
 
-            {/* 加载状态 */}
+            {/* Loading indicator */}
             {isLoading && (
-              <div className="flex justify-start animate-slide-up">
-                <div className="bg-white rounded-2xl rounded-tl-md border border-[#E5E5E5] px-5 py-4">
+              <div className="flex justify-start animate-fade-in-up">
+                <div className="bg-white rounded-2xl rounded-tl-md border border-[#E5E7EB] px-5 py-4 shadow-sm">
                   <div className="flex items-center gap-3">
-                    <div className="flex gap-1">
+                    <div className="flex gap-1.5">
                       <span className="w-2 h-2 bg-[#6B5CE7] rounded-full animate-bounce-subtle" style={{ animationDelay: "0ms" }} />
-                      <span className="w-2 h-2 bg-[#6B5CE7] rounded-full animate-bounce-subtle" style={{ animationDelay: "150ms" }} />
-                      <span className="w-2 h-2 bg-[#6B5CE7] rounded-full animate-bounce-subtle" style={{ animationDelay: "300ms" }} />
+                      <span className="w-2 h-2 bg-[#8B5CF6] rounded-full animate-bounce-subtle" style={{ animationDelay: "150ms" }} />
+                      <span className="w-2 h-2 bg-[#A78BFA] rounded-full animate-bounce-subtle" style={{ animationDelay: "300ms" }} />
                     </div>
-                    <span className="text-sm text-[#666666]">AI 正在创作中...</span>
+                    <span className="text-sm text-[#6B7280]">AI 正在创作中...</span>
                   </div>
                 </div>
               </div>
@@ -507,15 +556,15 @@ export default function Chat() {
         </div>
       </main>
 
-      {/* Prompt 编辑器 */}
+      {/* Prompt editor */}
       {showPromptEditor && (
-        <div className="bg-white border-t border-[#E5E5E5] px-4 py-3">
+        <div className="bg-white border-t border-[#E5E7EB] px-4 py-3 animate-fade-in-up">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-[#666666]">编辑 Prompt</span>
+              <span className="text-sm font-medium text-[#4B5563]">编辑 Prompt</span>
               <button
                 onClick={() => setShowPromptEditor(false)}
-                className="text-[#999999] hover:text-[#666666] transition-colors"
+                className="text-[#9CA3AF] hover:text-[#6B7280] transition-colors p-1 rounded-lg hover:bg-[#F3F4F6]"
               >
                 <CloseIcon />
               </button>
@@ -523,22 +572,22 @@ export default function Chat() {
             <textarea
               value={editablePrompt}
               onChange={(e) => setEditablePrompt(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg bg-[#FAFAFA] border border-[#E5E5E5] text-[#1A1A1A] focus:outline-none focus:border-[#6B5CE7] focus:ring-2 focus:ring-[#6B5CE7]/10 resize-none"
+              className="w-full px-4 py-3 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB] text-[#111827] focus:outline-none focus:border-[#6B5CE7] focus:ring-2 focus:ring-[#6B5CE7]/10 resize-none transition-all"
               rows={3}
               autoFocus
             />
-            {/* AI 推荐工作流 */}
+            {/* AI recommended workflow */}
             {(() => {
               const recommended = getRecommendedWorkflow(editablePrompt);
               if (recommended && recommended.id !== selectedWorkflowId) {
                 return (
-                  <div className="mt-2 p-3 rounded-lg bg-[#F0EEFF] border border-[#6B5CE7]/30">
+                  <div className="mt-2 p-3 rounded-xl bg-[#EDE9FE] border border-[#6B5CE7]/20 animate-fade-in">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-[#6B5CE7]">
                           <span className="font-medium">推荐工作流：</span>{recommended.name}
                         </p>
-                        <p className="text-xs text-[#666666]">{recommended.description}</p>
+                        <p className="text-xs text-[#6B7280]">{recommended.description}</p>
                       </div>
                       <button
                         onClick={() => sendMessage(editablePrompt, recommended.id)}
@@ -556,7 +605,7 @@ export default function Chat() {
               <button
                 onClick={() => sendMessage(editablePrompt)}
                 disabled={!editablePrompt.trim() || isLoading}
-                className="px-4 py-2 rounded-lg bg-[#6B5CE7] hover:bg-[#5A4BD6] text-white font-medium disabled:opacity-50 transition-colors"
+                className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#6B5CE7] to-[#7C6CF0] hover:shadow-md hover:shadow-purple-500/20 text-white font-medium disabled:opacity-50 transition-all"
               >
                 发送
               </button>
@@ -565,9 +614,9 @@ export default function Chat() {
         </div>
       )}
 
-      {/* 输入区域 */}
+      {/* Input */}
       {!showPromptEditor && (
-        <footer className="bg-white border-t border-[#E5E5E5] sticky bottom-0">
+        <footer className="bg-white/90 backdrop-blur-sm border-t border-[#E5E7EB]/60 sticky bottom-0">
           <div className="max-w-4xl mx-auto px-4 py-4">
             <div className="flex items-end gap-3">
               <div className="flex-1 relative">
@@ -579,47 +628,47 @@ export default function Chat() {
                   placeholder={workflows.length === 0 && isWorkflowsLoaded ? "暂未配置服务..." : "输入你想创作的主题..."}
                   rows={1}
                   disabled={isLoading || (workflows.length === 0 && isWorkflowsLoaded)}
-                  className="w-full px-5 py-3.5 rounded-xl bg-[#FAFAFA] border border-[#E5E5E5] text-[#1A1A1A] placeholder-[#999999] focus:outline-none focus:border-[#6B5CE7] focus:ring-2 focus:ring-[#6B5CE7]/10 resize-none disabled:opacity-50 transition-all"
+                  className="w-full px-5 py-3.5 rounded-2xl bg-[#F9FAFB] border border-[#E5E7EB] text-[#111827] placeholder-[#9CA3AF] focus:outline-none focus:border-[#6B5CE7] focus:ring-2 focus:ring-[#6B5CE7]/10 resize-none disabled:opacity-50 transition-all"
                   style={{ minHeight: "52px", maxHeight: "150px" }}
                 />
               </div>
               <button
                 onClick={() => sendMessage(input)}
                 disabled={!input.trim() || isLoading || (workflows.length === 0 && isWorkflowsLoaded)}
-                className="flex-shrink-0 w-[52px] h-[52px] rounded-xl bg-[#6B5CE7] hover:bg-[#5A4BD6] text-white flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex-shrink-0 w-[52px] h-[52px] rounded-2xl bg-gradient-to-br from-[#6B5CE7] to-[#8B5CF6] hover:shadow-lg hover:shadow-purple-500/25 text-white flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
               >
                 {isLoading ? <LoadingIcon /> : <SendIcon />}
               </button>
             </div>
-            <p className="text-center text-xs text-[#999999] mt-3">
+            <p className="text-center text-xs text-[#9CA3AF] mt-3">
               按 Enter 发送 · Shift + Enter 换行
             </p>
           </div>
         </footer>
       )}
 
-      {/* 底部管理后台链接 */}
-      <div className="py-3 text-center border-t border-[#E5E5E5]">
+      {/* Bottom admin link */}
+      <div className="py-3 text-center border-t border-[#E5E7EB]/40">
         <a
           href="/admin"
-          className="text-[11px] text-[#999999] hover:text-[#666666] transition-colors"
+          className="text-[11px] text-[#9CA3AF] hover:text-[#6B5CE7] transition-colors"
         >
           管理后台
         </a>
       </div>
 
-      {/* 图片灯箱 */}
+      {/* Lightbox */}
       {lightboxImage && (
         <div
-          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 lightbox-backdrop flex items-center justify-center z-50 p-4 animate-fade-in"
           onClick={() => setLightboxImage(null)}
         >
-          <div className="relative max-w-4xl max-h-[90vh]">
+          <div className="relative max-w-4xl max-h-[90vh] animate-scale-in">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={lightboxImage}
               alt="预览"
-              className="max-w-full max-h-[85vh] object-contain rounded-lg"
+              className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl"
             />
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
               <button
@@ -627,14 +676,14 @@ export default function Chat() {
                   e.stopPropagation();
                   downloadImage(lightboxImage, "image.jpg");
                 }}
-                className="px-4 py-2 rounded-lg bg-white text-[#1A1A1A] font-medium hover:bg-[#F9F9F9] transition-colors flex items-center gap-2"
+                className="px-4 py-2.5 rounded-xl bg-white text-[#111827] font-medium hover:bg-[#F9FAFB] transition-colors flex items-center gap-2 shadow-lg"
               >
                 <DownloadIcon />
                 下载图片
               </button>
               <button
                 onClick={() => setLightboxImage(null)}
-                className="px-4 py-2 rounded-lg bg-[#1A1A1A] text-white font-medium hover:bg-black transition-colors"
+                className="px-4 py-2.5 rounded-xl bg-[#111827]/80 text-white font-medium hover:bg-[#111827] transition-colors shadow-lg"
               >
                 关闭
               </button>
@@ -642,11 +691,16 @@ export default function Chat() {
           </div>
         </div>
       )}
+
+      {/* Toast */}
+      <div className={`toast ${toast ? "show" : ""}`}>
+        {toast}
+      </div>
     </div>
   );
 }
 
-// 根据工作流生成相关的引导问题
+// Generate contextual prompts based on workflow
 function generateContextualPrompts(context: string, workflowName: string): string[] {
   const nameLower = workflowName.toLowerCase();
 
@@ -668,7 +722,6 @@ function generateContextualPrompts(context: string, workflowName: string): strin
     ];
   }
 
-  // 默认通用引导
   return [
     "帮我写一篇关于人工智能的科普文章",
     "写一篇春季养生指南",
@@ -677,7 +730,7 @@ function generateContextualPrompts(context: string, workflowName: string): strin
   ];
 }
 
-// 图标组件
+// Icon components
 function SendIcon() {
   return (
     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -713,7 +766,7 @@ function DownloadIcon() {
 
 function ChevronIcon() {
   return (
-    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-4 h-4 text-[#9CA3AF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
     </svg>
   );

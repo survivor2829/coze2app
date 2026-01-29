@@ -2,30 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 简约配色方案 - CSS变量 */
+/* Design Tokens */
 :root {
-  /* 背景色 */
+  /* Background */
   --bg-primary: #FFFFFF;
-  --bg-secondary: #F7F7F8;
-  --bg-tertiary: #FAFAFA;
+  --bg-secondary: #F8F9FC;
+  --bg-tertiary: #F1F3F9;
 
-  /* 文字色 */
-  --text-primary: #1A1A1A;
-  --text-secondary: #666666;
-  --text-tertiary: #999999;
+  /* Text */
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --text-tertiary: #9CA3AF;
 
-  /* 主题色 */
+  /* Brand */
   --accent-primary: #6B5CE7;
   --accent-hover: #5A4BD6;
-  --accent-light: #F0EEFF;
+  --accent-light: #EDE9FE;
+  --accent-glow: rgba(107, 92, 231, 0.15);
 
-  /* 边框色 */
-  --border-default: #E5E5E5;
-  --border-hover: #D0D0D0;
+  /* Borders */
+  --border-default: #E5E7EB;
+  --border-hover: #D1D5DB;
+  --border-focus: #6B5CE7;
 
-  /* 阴影 */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 20px rgba(107, 92, 231, 0.12);
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
 }
 
 * {
@@ -37,7 +49,7 @@ html {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", sans-serif;
   font-size: 15px;
   line-height: 1.6;
   color: var(--text-primary);
@@ -46,14 +58,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4 {
   font-weight: 600;
   color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
-/* 自定义滚动条 */
+::selection {
+  background-color: var(--accent-light);
+  color: var(--accent-primary);
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -61,23 +80,69 @@ h1, h2, h3 {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.12);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(0, 0, 0, 0.22);
 }
 
-/* 简约背景 - 替换原来的渐变动画背景 */
+/* ===== Backgrounds ===== */
+
+/* Subtle mesh gradient background */
 .bg-animate {
   background-color: var(--bg-secondary);
+  background-image:
+    radial-gradient(at 20% 20%, rgba(107, 92, 231, 0.04) 0px, transparent 50%),
+    radial-gradient(at 80% 10%, rgba(168, 85, 247, 0.03) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, rgba(59, 130, 246, 0.03) 0px, transparent 50%);
 }
 
-/* 打字机光标 */
+/* Animated gradient mesh for hero sections */
+.bg-mesh-animated {
+  background-color: var(--bg-secondary);
+  background-image:
+    radial-gradient(at 20% 20%, rgba(107, 92, 231, 0.06) 0px, transparent 50%),
+    radial-gradient(at 80% 10%, rgba(168, 85, 247, 0.05) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, rgba(59, 130, 246, 0.04) 0px, transparent 50%);
+  animation: meshMove 20s ease-in-out infinite;
+}
+
+@keyframes meshMove {
+  0%, 100% {
+    background-image:
+      radial-gradient(at 20% 20%, rgba(107, 92, 231, 0.06) 0px, transparent 50%),
+      radial-gradient(at 80% 10%, rgba(168, 85, 247, 0.05) 0px, transparent 50%),
+      radial-gradient(at 50% 80%, rgba(59, 130, 246, 0.04) 0px, transparent 50%);
+  }
+  33% {
+    background-image:
+      radial-gradient(at 40% 30%, rgba(107, 92, 231, 0.06) 0px, transparent 50%),
+      radial-gradient(at 70% 40%, rgba(168, 85, 247, 0.05) 0px, transparent 50%),
+      radial-gradient(at 30% 70%, rgba(59, 130, 246, 0.04) 0px, transparent 50%);
+  }
+  66% {
+    background-image:
+      radial-gradient(at 60% 10%, rgba(107, 92, 231, 0.06) 0px, transparent 50%),
+      radial-gradient(at 30% 50%, rgba(168, 85, 247, 0.05) 0px, transparent 50%),
+      radial-gradient(at 70% 60%, rgba(59, 130, 246, 0.04) 0px, transparent 50%);
+  }
+}
+
+/* ===== Header ===== */
+.glass {
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.6);
+}
+
+/* ===== Typing cursor ===== */
 .typing-cursor::after {
   content: "|";
   animation: blink 1s infinite;
+  color: var(--accent-primary);
 }
 
 @keyframes blink {
@@ -85,10 +150,10 @@ h1, h2, h3 {
   51%, 100% { opacity: 0; }
 }
 
-/* 文章内容样式 */
+/* ===== Article content ===== */
 .article-content {
   line-height: 1.9;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
 }
 
 .article-content p {
@@ -98,24 +163,44 @@ h1, h2, h3 {
 .article-content strong,
 .article-content b {
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
-/* 简约头部 - 替换毛玻璃效果 */
-.glass {
-  background-color: var(--bg-primary);
-  border-bottom: 1px solid var(--border-default);
+.article-content h1,
+.article-content h2,
+.article-content h3 {
+  margin-top: 1.5em;
+  margin-bottom: 0.6em;
 }
 
-/* 输入框聚焦效果 */
+.article-content ul,
+.article-content ol {
+  padding-left: 1.5em;
+}
+
+.article-content blockquote {
+  border-left: 3px solid var(--accent-primary);
+  padding-left: 1em;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.article-content code {
+  background-color: var(--bg-tertiary);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+/* ===== Input styles ===== */
 .input-glow:focus {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(107, 92, 231, 0.1);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
-/* 图片悬浮效果 - 更轻量 */
+/* ===== Image hover ===== */
 .image-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .image-hover:hover {
@@ -123,51 +208,198 @@ h1, h2, h3 {
   box-shadow: var(--shadow-md);
 }
 
-/* 简约卡片样式 */
+/* ===== Card styles ===== */
 .card-minimal {
   background-color: var(--bg-primary);
   border: 1px solid var(--border-default);
-  border-radius: 12px;
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
   transition: all 0.2s ease;
 }
 
 .card-minimal:hover {
-  background-color: #F9F9F9;
   border-color: var(--border-hover);
   box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .card-minimal.selected {
   border-color: var(--accent-primary);
   background-color: var(--accent-light);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
-/* 简约按钮样式 */
+/* ===== Button styles ===== */
 .btn-primary-minimal {
   background-color: var(--accent-primary);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   padding: 12px 24px;
   font-weight: 500;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-primary-minimal:hover {
   background-color: var(--accent-hover);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-1px);
+}
+
+.btn-primary-minimal:active {
+  transform: translateY(0);
 }
 
 .btn-primary-minimal:disabled {
   opacity: 0.5;
+  transform: none;
+  box-shadow: none;
 }
 
 .btn-secondary-minimal {
   background-color: transparent;
   color: var(--accent-primary);
   border: none;
+  transition: all 0.2s ease;
 }
 
 .btn-secondary-minimal:hover {
   background-color: var(--accent-light);
+}
+
+/* ===== Toast notification ===== */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  z-index: 9999;
+  padding: 10px 20px;
+  background-color: var(--text-primary);
+  color: white;
+  border-radius: var(--radius-lg);
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+/* ===== Gradient text ===== */
+.text-gradient {
+  background: linear-gradient(135deg, #6B5CE7 0%, #8B5CF6 50%, #A78BFA 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== Card glow effect on hover ===== */
+.card-glow {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.card-glow::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(107, 92, 231, 0), rgba(107, 92, 231, 0));
+  z-index: -1;
+  transition: all 0.3s ease;
+}
+
+.card-glow:hover::before {
+  background: linear-gradient(135deg, rgba(107, 92, 231, 0.1), rgba(139, 92, 246, 0.05));
+}
+
+.card-glow:hover {
+  box-shadow: 0 8px 25px -5px rgba(107, 92, 231, 0.12);
+  border-color: rgba(107, 92, 231, 0.3);
+}
+
+/* ===== Shimmer loading ===== */
+.shimmer {
+  background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-secondary) 50%, var(--bg-tertiary) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===== Pulse ring (for status indicators) ===== */
+.pulse-ring {
+  position: relative;
+}
+
+.pulse-ring::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-primary);
+  animation: pulseRing 2s ease-out infinite;
+}
+
+@keyframes pulseRing {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.6); }
+}
+
+/* ===== Lightbox backdrop ===== */
+.lightbox-backdrop {
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ===== Step progress connector animation ===== */
+.step-connector {
+  position: relative;
+  overflow: hidden;
+}
+
+.step-connector::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, rgba(107, 92, 231, 0.3), transparent);
+  animation: progressShine 2s ease-in-out infinite;
+}
+
+@keyframes progressShine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ===== Streaming cursor ===== */
+.streaming-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background-color: var(--accent-primary);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: cursorBlink 0.8s ease-in-out infinite;
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }

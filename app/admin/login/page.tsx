@@ -40,21 +40,23 @@ function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md">
-      <div className="glass rounded-3xl border border-white/30 shadow-2xl p-8">
+    <div className="w-full max-w-sm animate-fade-in-up">
+      <div className="bg-white/90 backdrop-blur-xl rounded-3xl border border-white/40 shadow-xl p-8">
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/25 mb-4">
-            <span className="text-2xl text-white">🔐</span>
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#6B5CE7] via-[#8B5CF6] to-[#A78BFA] flex items-center justify-center shadow-lg shadow-purple-500/25 mb-4">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+            </svg>
           </div>
-          <h1 className="text-2xl font-semibold text-gray-800">管理后台</h1>
-          <p className="text-gray-500 text-sm mt-1">请登录以继续</p>
+          <h1 className="text-2xl font-bold text-[#111827]">管理后台</h1>
+          <p className="text-[#6B7280] text-sm mt-1">请登录以继续</p>
         </div>
 
-        {/* 表单 */}
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label htmlFor="username" className="block text-sm font-medium text-[#111827] mb-1.5">
               用户名
             </label>
             <input
@@ -62,15 +64,16 @@ function LoginForm() {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-white/80 border border-white/50 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-purple-300 input-glow transition-all"
+              className="w-full px-4 py-3 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB] text-[#111827] placeholder-[#9CA3AF] focus:outline-none focus:border-[#6B5CE7] focus:ring-2 focus:ring-[#6B5CE7]/10 transition-all"
               placeholder="请输入用户名"
               required
               disabled={isLoading}
+              autoComplete="username"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label htmlFor="password" className="block text-sm font-medium text-[#111827] mb-1.5">
               密码
             </label>
             <input
@@ -78,15 +81,19 @@ function LoginForm() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-white/80 border border-white/50 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-purple-300 input-glow transition-all"
+              className="w-full px-4 py-3 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB] text-[#111827] placeholder-[#9CA3AF] focus:outline-none focus:border-[#6B5CE7] focus:ring-2 focus:ring-[#6B5CE7]/10 transition-all"
               placeholder="请输入密码"
               required
               disabled={isLoading}
+              autoComplete="current-password"
             />
           </div>
 
           {error && (
-            <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">
+            <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm flex items-center gap-2 animate-fade-in">
+              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
               {error}
             </div>
           )}
@@ -94,7 +101,7 @@ function LoginForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2"
+            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#6B5CE7] to-[#8B5CF6] text-white font-medium shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.99]"
           >
             {isLoading ? (
               <>
@@ -107,12 +114,15 @@ function LoginForm() {
           </button>
         </form>
 
-        {/* 返回链接 */}
+        {/* Back link */}
         <div className="mt-6 text-center">
           <a
             href="/"
-            className="text-sm text-gray-500 hover:text-purple-600 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm text-[#6B7280] hover:text-[#6B5CE7] transition-colors"
           >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
             返回首页
           </a>
         </div>
@@ -123,11 +133,16 @@ function LoginForm() {
 
 export default function AdminLogin() {
   return (
-    <div className="min-h-screen bg-animate flex items-center justify-center px-4">
+    <div className="min-h-screen bg-mesh-animated flex items-center justify-center px-4">
       <Suspense fallback={
-        <div className="w-full max-w-md">
-          <div className="glass rounded-3xl border border-white/30 shadow-2xl p-8 text-center">
-            <div className="animate-pulse">加载中...</div>
+        <div className="w-full max-w-sm">
+          <div className="bg-white/90 backdrop-blur-xl rounded-3xl border border-white/40 shadow-xl p-8 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#6B5CE7] to-[#8B5CF6] flex items-center justify-center mx-auto mb-4 animate-pulse shadow-lg shadow-purple-500/25">
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+            </div>
+            <p className="text-[#6B7280]">加载中...</p>
           </div>
         </div>
       }>
